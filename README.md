@@ -69,6 +69,10 @@ All project documentation is written in English and located in the [`docs/`](doc
    Step-by-step guide for setting up GitHub Pages, custom domain with Cloudflare DNS, Cloudflare Turnstile, Cloudflare Worker, and Resend email forwarding.
 5. **[Editor & CMS Guide](docs/CMS_GUIDE.md)**
    How non-technical staff can update news, schedules, and encrypted photos using the Git-based Admin UI or YAML/Markdown files.
+6. **[AI Agent Instructions (`AGENTS.md`)](AGENTS.md)**
+   Architectural rules, styling guidelines, and local build commands for AI coding agents.
+7. **[Task List & Roadmap (`docs/TASKS.md`)](docs/TASKS.md)** & **[Session Handover (`docs/SESSION_HANDOVER.md`)](docs/SESSION_HANDOVER.md)**
+   Project backlog, completed phases, and session continuity notes.
 
 ---
 
