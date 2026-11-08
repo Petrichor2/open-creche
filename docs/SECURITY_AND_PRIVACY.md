@@ -27,10 +27,11 @@ This document explains how **OpenCreche** resolves this paradox using a **Zero-P
   - Stored as an encrypted Cloudflare Worker Secret (`wrangler secret put VAULT_MASTER_KEY`).
 - **Initialization Vector (IV):** A fresh 96-bit (12-byte) cryptographically random IV is generated for every single encrypted file or JSON payload.
 - **Binary File Format (`*.enc` for Photos):**
-  ```text
-  +--------------------+-----------------------------------------+--------------------+
-  |   12 Bytes: IV     |        N Bytes: Ciphertext              | 16 Bytes: Auth Tag |
-  +--------------------+-----------------------------------------+--------------------+
+  ```mermaid
+  packet-beta
+    0-11: "12 Bytes: Random IV (96-bit)"
+    12-43: "N Bytes: AES-256-GCM Ciphertext (WebP/SVG)"
+    44-59: "16 Bytes: GCM Auth Tag (128-bit)"
   ```
 - **JSON Manifest Format (`*.enc.json` for Contact, Staff & Gallery Metadata):**
   ```json
@@ -46,27 +47,27 @@ This document explains how **OpenCreche** resolves this paradox using a **Zero-P
 
 ## 3. End-to-End Unlock Flow
 
-```text
-[Browser]                                 [Cloudflare Worker]                [Cloudflare Turnstile API]
-   |                                               |                                     |
-   | 1. User clicks "Unlock Protected Content"     |                                     |
-   | 2. Renders Turnstile Widget & gets token      |                                     |
-   |---------------------------------------------->|                                     |
-   |    POST /api/vault/unlock { token }           |                                     |
-   |                                               | 3. POST /turnstile/v0/siteverify    |
-   |                                               |    { secret, response: token, ip }  |
-   |                                               |------------------------------------>|
-   |                                               |<------------------------------------|
-   |                                               | 4. { success: true, hostname: ... } |
-   |                                               |                                     |
-   |    5. Returns { key: VAULT_MASTER_KEY }       |                                     |
-   |<----------------------------------------------|                                     |
-   |                                               |                                     |
-   | 6. Caches key in sessionStorage               |                                     |
-   | 7. Fetches /vault/contact.enc.json & *.enc    |                                     |
-   |    from GitHub Pages                          |                                     |
-   | 8. Decrypts via window.crypto.subtle.decrypt  |                                     |
-   | 9. Renders phone, email, staff & Blob images  |                                     |
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Parent as Parent / Visitor (Browser)
+    participant Pages as GitHub Pages (Static)
+    participant Worker as Cloudflare Worker
+    participant Turnstile as Cloudflare Turnstile API
+
+    Parent->>Pages: Loads page (/hu/, /en/, /de/)
+    Parent->>Parent: Clicks "Unlock Protected Content"
+    Parent->>Turnstile: Completes Managed Turnstile Widget
+    Turnstile-->>Parent: Issues single-use turnstileToken
+    Parent->>Worker: POST /api/vault/unlock { turnstileToken }
+    Worker->>Turnstile: POST /turnstile/v0/siteverify { secret, response, ip }
+    Turnstile-->>Worker: { success: true, hostname: "..." }
+    Worker-->>Parent: 200 OK { key: VAULT_MASTER_KEY }
+    Parent->>Parent: Caches key in sessionStorage
+    Parent->>Pages: GET /vault/*.enc.json & /vault-media/**/*.enc
+    Pages-->>Parent: Returns encrypted AES-256-GCM payloads
+    Parent->>Parent: Decrypts in-memory via window.crypto.subtle.decrypt()
+    Parent->>Parent: Renders phone numbers, emails, staff & Blob URLs
 ```
 
 ### Single-Verification UX (Parent-Friendly)
