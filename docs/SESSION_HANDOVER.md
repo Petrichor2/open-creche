@@ -8,9 +8,9 @@
 
 ## 1. Summary of What Has Been Built
 
-1. **Architecture & English Documentation (`b6b6f88`):**
-   - Complete technical and user documentation created in `README.md` and `docs/{ARCHITECTURE,CONFIGURATION,SECURITY_AND_PRIVACY,DEPLOYMENT,CMS_GUIDE}.md`.
-2. **Full Working Project Scaffolding (`f7a75c7`):**
+1. **Architecture & English Documentation (`b6b6f88`, `68b28bc`):**
+   - Complete technical and user documentation created in `README.md` and `docs/{ARCHITECTURE,CONFIGURATION,SECURITY_AND_PRIVACY,DEPLOYMENT,CMS_GUIDE}.md`, including rich GitHub-native **Mermaid** flowcharts, packet diagrams, and sequence diagrams.
+2. **Full Working Project Scaffolding (`f7a75c7`, `a5024e8`):**
    - **Astro 5 Static Site:** Configured dynamically from `config/site.yaml` with `hu` (default), `en`, and `de` locales.
    - **Vanilla CSS Craft Theme:** Located in `src/styles/tokens.css` and `src/styles/base.css`. Designed specifically to avoid generic AI/SaaS aesthetics, using warm paper backgrounds, pebble-shaped cards, and custom SVG nursery illustrations.
    - **AES-256-GCM Privacy Vault:**
