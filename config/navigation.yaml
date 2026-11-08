@@ -1,0 +1,16 @@
+# Navigation links mapped to section anchors or pages
+header:
+  - id: "about"
+    href: "#about"
+  - id: "groups"
+    href: "#groups"
+  - id: "schedule"
+    href: "#schedule"
+  - id: "news"
+    href: "#news"
+  - id: "staff"
+    href: "#staff"
+  - id: "gallery"
+    href: "#gallery"
+  - id: "contact"
+    href: "#contact"

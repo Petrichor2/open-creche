@@ -1,0 +1,67 @@
+# Sveltia CMS / Decap CMS Configuration for OpenCreche
+backend:
+  name: github
+  repo: Petrichor2/open-creche
+  branch: main
+  # Replace with your deployed Cloudflare Worker URL for GitHub OAuth
+  base_url: https://api.napsugar-ovi.example.hu
+  auth_endpoint: api/oauth/auth
+
+media_folder: "public/assets"
+public_folder: "/assets"
+
+i18n:
+  structure: multiple_folders
+  locales: [hu, en, de]
+  default_locale: hu
+
+collections:
+  - name: "site_config"
+    label: "Global Site Settings"
+    files:
+      - name: "site"
+        label: "Site Configuration (config/site.yaml)"
+        file: "config/site.yaml"
+        fields:
+          - label: "Site Identity"
+            name: "site"
+            widget: "object"
+            fields:
+              - { label: "Production URL", name: "url", widget: "string" }
+              - { label: "Institution Type", name: "type", widget: "select", options: ["creche", "kindergarten", "combined"] }
+
+  - name: "news"
+    label: "News & Events Calendar"
+    folder: "content/news"
+    create: true
+    extension: "md"
+    i18n: true
+    slug: "{{year}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string", i18n: true }
+      - { label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", i18n: duplicate }
+      - { label: "Event Date (Optional)", name: "eventDate", widget: "string", required: false, i18n: true }
+      - { label: "Event Time (Optional)", name: "eventTime", widget: "string", required: false, i18n: true }
+      - { label: "Category", name: "category", widget: "select", options: ["announcement", "event", "holiday", "enrollment"], i18n: duplicate }
+      - { label: "Pinned / Featured", name: "pinned", widget: "boolean", default: false, i18n: duplicate }
+      - { label: "Short Summary", name: "summary", widget: "text", i18n: true }
+      - { label: "Full Details", name: "body", widget: "markdown", i18n: true }
+
+  - name: "groups"
+    label: "Creche & Kindergarten Groups"
+    folder: "content/groups"
+    create: true
+    extension: "yaml"
+    format: "yaml"
+    i18n: true
+    fields:
+      - { label: "Group ID", name: "id", widget: "string", i18n: duplicate }
+      - { label: "Display Order", name: "order", widget: "number", i18n: duplicate }
+      - { label: "Group Name", name: "name", widget: "string", i18n: true }
+      - { label: "Group Type", name: "type", widget: "select", options: ["creche", "kindergarten"], i18n: duplicate }
+      - { label: "Age Range", name: "ageRange", widget: "string", i18n: true }
+      - { label: "Capacity", name: "capacity", widget: "number", i18n: duplicate }
+      - { label: "Badge Hex Color", name: "badgeColor", widget: "string", default: "#D96B43", i18n: duplicate }
+      - { label: "Icon", name: "icon", widget: "select", options: ["ladybug", "hedgehog", "owl", "leaf", "heart"], i18n: duplicate }
+      - { label: "Short Summary", name: "summary", widget: "text", i18n: true }
+      - { label: "Detailed Description", name: "details", widget: "text", i18n: true }

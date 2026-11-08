@@ -1,0 +1,32 @@
+---
+/**
+ * VaultGateCard.astro
+ * Reusable human-verification prompt displayed before encrypted staff, gallery, or contact data is decrypted.
+ */
+interface Props {
+  uiVault: Record<string, string>;
+}
+
+const { uiVault } = Astro.props;
+---
+
+<div class="vault-container" data-vault-gate>
+  <span class="vault-shield-badge">
+    🛡️ {uiVault?.protectedBadge || 'Privacy Protected'}
+  </span>
+  <h3 style="margin-bottom: 0.55rem;">{uiVault?.unlockTitle}</h3>
+  <p style="max-width: 52ch; margin-inline: auto; margin-bottom: 1.2rem; font-size: 0.95rem;">
+    {uiVault?.unlockPrompt}
+  </p>
+  <div class="turnstile-slot" data-turnstile-slot></div>
+  <button type="button" class="btn btn-primary" data-vault-unlock-btn>
+    🔓 {uiVault?.unlockButton}
+  </button>
+  <p
+    data-vault-status
+    hidden
+    style="margin-top: 0.85rem; font-size: 0.88rem; font-weight: 700; color: var(--color-secondary-dark);"
+  >
+    ⏳ {uiVault?.unlocking}
+  </p>
+</div>

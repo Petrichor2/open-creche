@@ -1,0 +1,73 @@
+nav:
+  about: "About Us"
+  groups: "Our Groups"
+  schedule: "Daily Routine"
+  news: "News & Events"
+  staff: "Our Team"
+  gallery: "Photo Gallery"
+  contact: "Contact"
+
+hero:
+  primaryCta: "Explore Our Groups"
+  secondaryCta: "Get in Touch"
+  openHoursLabel: "Opening Hours"
+  locationLabel: "Location"
+
+sections:
+  aboutTag: "Our Pedagogy"
+  groupsTag: "Group Rooms"
+  groupsTitle: "Creche & Kindergarten Groups"
+  groupsSubtitle: "Small, age-appropriate rooms designed to make every child feel safe, curious, and at home."
+  capacityLabel: "Capacity"
+  ageRangeLabel: "Age Group"
+  typeCreche: "Creche"
+  typeKindergarten: "Kindergarten"
+
+  scheduleTag: "A Day With Us"
+  newsTag: "Updates & Calendar"
+  newsTitle: "News, Events & Important Dates"
+  newsSubtitle: "Upcoming celebrations, open days, parent-teacher meetings, and institutional news."
+  eventDateLabel: "Event Date"
+  pinnedBadge: "Featured"
+
+  staffTag: "Who Cares for the Children?"
+  staffTitle: "Our Dedicated Educators"
+  staffSubtitle: "Qualified early childhood educators, kindergarten teachers, and caregivers who guide your children with warmth and patience."
+
+  galleryTag: "Moments"
+  galleryTitle: "Glimpses of Everyday Life"
+  gallerySubtitle: "Arts and crafts, outdoor garden play, and seasonal celebrations."
+
+  contactTag: "Contact & Enrollment"
+  contactTitle: "Get in Touch With Us"
+  contactSubtitle: "Have questions about enrollment, adaptation, or available places? Send us a message or give us a call."
+
+vault:
+  protectedBadge: "Privacy Shield (Anti-Scrape)"
+  unlockTitle: "Unlock Protected Information"
+  unlockPrompt: "To protect our children and educators from automated bots and AI scrapers, phone numbers, email addresses, and photos are encrypted."
+  unlockButton: "Verify Humanity & Unlock"
+  unlockedBadge: "Verified – Protected Data Unlocked"
+  unlocking: "Decrypting protected content in your browser..."
+  error: "Verification failed. Please try again."
+  phoneHeading: "Phone Numbers"
+  emailHeading: "Email Addresses"
+
+contactForm:
+  title: "Send Us a Direct Message"
+  subtitle: "Your message is delivered securely through our serverless relay without exposing staff email addresses to spam bots."
+  parentName: "Parent / Guardian Name *"
+  parentEmail: "Your Email Address *"
+  parentPhone: "Phone Number (Optional)"
+  childAge: "Child's Age (Optional)"
+  subject: "Subject *"
+  message: "Message *"
+  submit: "Send Secure Message"
+  sending: "Sending..."
+  success: "Thank you! Your message has been securely delivered to our institution."
+  error: "Could not send message. Please try again."
+
+footer:
+  rights: "All rights reserved."
+  privacyNote: "Protected by Cloudflare Turnstile and client-side AES-256-GCM encryption to safeguard children and staff."
+  adminLink: "Staff Admin (CMS)"

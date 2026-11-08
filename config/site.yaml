@@ -1,0 +1,96 @@
+# Global Site Configuration for OpenCreche
+site:
+  url: "https://napsugar-ovi.example.hu"
+  type: "combined" # "creche" | "kindergarten" | "combined"
+
+  title:
+    hu: "Napsugár Bölcsőde és Óvoda"
+    en: "Sunshine Creche & Kindergarten"
+    de: "Sonnenschein Kinderkrippe & Kindergarten"
+
+  tagline:
+    hu: "Szeretetteljes, biztonságos és természetközeli fészek a legkisebbeknek"
+    en: "A loving, safe, and nature-close nest for the little ones"
+    de: "Ein liebevolles, sicheres und naturnahes Nest für die Kleinsten"
+
+  heroSubtitle:
+    hu: "1,5 éves kortól 6 éves korig várjuk a gyermekeket kis létszámú, családias csoportjainkba, saját árnyékos kerttel és gondoskodó pedagógusokkal."
+    en: "We welcome children aged 1.5 to 6 into our small, family-like groups with a shaded private garden and caring educators."
+    de: "Wir heißen Kinder im Alter von 1,5 bis 6 Jahren in unseren kleinen, familiären Gruppen mit eigenem schattigen Garten und liebevollen Pädagogen willkommen."
+
+  location:
+    country: "Magyarország"
+    postalCode: "1024"
+    city: "Budapest"
+    address:
+      hu: "Kis Rókus utca 12."
+      en: "12 Kis Rókus Street"
+      de: "Kis Rókus Straße 12"
+    coordinates:
+      lat: 47.5105
+      lng: 19.0265
+    openingHours:
+      hu: "Hétfő – Péntek: 07:00 – 17:00"
+      en: "Monday – Friday: 07:00 – 17:00"
+      de: "Montag – Freitag: 07:00 – 17:00"
+
+i18n:
+  defaultLocale: "hu"
+  locales:
+    - code: "hu"
+      label: "Magyar"
+      flag: "🇭🇺"
+    - code: "en"
+      label: "English"
+      flag: "🇬🇧"
+    - code: "de"
+      label: "Deutsch"
+      flag: "🇩🇪"
+  fallbackToDefault: true
+  autoTranslate:
+    enabled: true
+    provider: "github-models"
+    model: "gpt-4o-mini"
+    tone: "Warm, welcoming, natural early-childhood education terminology"
+    collections:
+      - "pages"
+      - "groups"
+      - "news"
+      - "i18n"
+
+theme:
+  # Options: "sunshine" | "meadow" | "terracotta" | "forest"
+  palette: "sunshine"
+  colors:
+    background: "#FAF6F0"
+    surface: "#F3ECE1"
+    surfaceElevated: "#FFFFFF"
+    primary: "#D96B43"
+    primaryDark: "#B8522E"
+    secondary: "#5B8266"
+    accent: "#E6B84C"
+    text: "#2C2523"
+    textMuted: "#685B56"
+  dividerStyle: "hills"
+
+features:
+  about: true
+  dailySchedule: true
+  groups: true
+  newsAndEvents: true
+  staffDirectory: true
+  photoGallery: true
+  contactForm: true
+
+security:
+  # Cloudflare Turnstile Test Site Key (Always passes in demo/dev mode; replace in production)
+  turnstileSiteKey: "1x00000000000000000000AA"
+  # Cloudflare Worker base URL (set to empty or demo mode for local preview)
+  workerBaseUrl: "https://api.napsugar-ovi.example.hu"
+  # Demo mode allows unlocking the sample encrypted vault locally without deploying the Worker first
+  demoMode: true
+  protect:
+    contactDetails: true
+    staffProfiles: true
+    galleryPhotos: true
+    contactForm: true

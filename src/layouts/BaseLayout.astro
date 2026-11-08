@@ -1,0 +1,112 @@
+---
+import '../styles/base.css';
+import type { SiteConfig } from '../utils/content';
+
+interface Props {
+  locale: string;
+  siteConfig: SiteConfig;
+  ui: Record<string, any>;
+  navItems: Array<{ id: string; href: string }>;
+}
+
+const { locale, siteConfig, ui, navItems } = Astro.props;
+const defaultLocale = siteConfig.i18n.defaultLocale;
+const siteTitle = siteConfig.site.title[locale] || siteConfig.site.title[defaultLocale];
+const siteTagline = siteConfig.site.tagline[locale] || siteConfig.site.tagline[defaultLocale];
+const colors = siteConfig.theme?.colors || {};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{siteTitle} — {siteTagline}</title>
+    <meta name="description" content={siteTagline} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <style
+      define:vars={{
+        'bg-canvas': colors.background || '#FAF6F0',
+        'bg-surface': colors.surface || '#F3ECE1',
+        'bg-elevated': colors.surfaceElevated || '#FFFFFF',
+        'color-primary': colors.primary || '#D96B43',
+        'color-primary-dark': colors.primaryDark || '#B8522E',
+        'color-secondary': colors.secondary || '#5B8266',
+        'color-accent': colors.accent || '#E6B84C',
+        'color-text': colors.text || '#2C2523',
+        'color-text-muted': colors.textMuted || '#685B56',
+      }}
+    ></style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href={`/${locale}/`} class="brand-link">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D96B43" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5" fill="#E6B84C" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </span>
+          <span>
+            <span class="brand-title">{siteTitle}</span>
+            <span class="brand-subtitle">{siteConfig.site.location.city}</span>
+          </span>
+        </a>
+
+        <nav class="main-nav" aria-label="Primary Navigation">
+          {
+            navItems.map((item) => (
+              <a href={item.href} class="nav-link">
+                {ui.nav?.[item.id] || item.id}
+              </a>
+            ))
+          }
+        </nav>
+
+        <div class="lang-switcher" role="navigation" aria-label="Language switcher">
+          {
+            siteConfig.i18n.locales.map((loc) => (
+              <a
+                href={`/${loc.code}/`}
+                class={`lang-pill ${loc.code === locale ? 'active' : ''}`}
+                hreflang={loc.code}
+              >
+                {loc.flag} {loc.code.toUpperCase()}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong style="font-size: 1.08rem; color: #FFFFFF;">{siteTitle}</strong>
+          <p style="margin-top: 0.35rem;">{ui.footer?.privacyNote}</p>
+        </div>
+        <div style="text-align: right;">
+          <p>
+            © {new Date().getFullYear()} {siteTitle}. {ui.footer?.rights}
+          </p>
+          <p style="margin-top: 0.3rem;">
+            <a href="/admin/">{ui.footer?.adminLink}</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

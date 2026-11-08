@@ -1,0 +1,29 @@
+---
+import { getSiteConfig } from '../utils/content';
+
+const siteConfig = getSiteConfig();
+const defaultLocale = siteConfig.i18n.defaultLocale || 'hu';
+const siteTitle = siteConfig.site.title[defaultLocale] || 'OpenCreche';
+---
+
+<!doctype html>
+<html lang={defaultLocale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content={`0;url=/${defaultLocale}/`} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{siteTitle}</title>
+    <script is:inline define:vars={{ defaultLocale, locales: siteConfig.i18n.locales.map((l) => l.code) }}>
+      (function () {
+        const navLang = (navigator.language || '').slice(0, 2).toLowerCase();
+        const target = locales.includes(navLang) ? navLang : defaultLocale;
+        window.location.replace('/' + target + '/');
+      })();
+    </script>
+  </head>
+  <body style="font-family: sans-serif; background: #FAF6F0; color: #2C2523; display: grid; place-items: center; min-height: 100vh;">
+    <p>
+      Redirecting to <a href={`/${defaultLocale}/`}>{siteTitle} ({defaultLocale.toUpperCase()})</a>...
+    </p>
+  </body>
+</html>
