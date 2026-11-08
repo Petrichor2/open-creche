@@ -1,0 +1,288 @@
+---
+/**
+ * PrivacyVaultRuntime.astro
+ *
+ * Client-side WebCrypto AES-256-GCM decryption & Cloudflare Turnstile verification controller.
+ * Once a human visitor passes Turnstile in any protected section (Contact, Staff, or Gallery),
+ * the AES key is retrieved from the Cloudflare Worker (or demo fallback in local preview),
+ * cached in sessionStorage, and used to decrypt all `.enc.json` manifests and `.enc` image blobs.
+ */
+interface Props {
+  locale: string;
+  turnstileSiteKey: string;
+  workerBaseUrl: string;
+  demoMode?: boolean;
+  uiVault: Record<string, string>;
+}
+
+const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = Astro.props;
+---
+
+<div
+  id="oc-vault-config"
+  data-locale={locale}
+  data-sitekey={turnstileSiteKey}
+  data-worker={workerBaseUrl}
+  data-demo={demoMode ? 'true' : 'false'}
+  data-error-msg={uiVault?.error || 'Verification failed'}
+  hidden
+></div>
+
+<script is:inline>
+  (function () {
+    const STORAGE_KEY = 'oc_vault_aes_key_b64';
+    const DEMO_KEY_B64 = 'T3BlbkNyZWNoZURlbW9WbHV0TWFzdGVyS2V5MjAyNiE=';
+    const configEl = document.getElementById('oc-vault-config');
+    if (!configEl) return;
+
+    const locale = configEl.dataset.locale || 'hu';
+    const siteKey = configEl.dataset.sitekey || '1x00000000000000000000AA';
+    const workerUrl = (configEl.dataset.worker || '').replace(/\/$/, '');
+    const isDemo = configEl.dataset.demo === 'true';
+
+    function b64ToBytes(b64) {
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes;
+    }
+
+    async function importAesKey(keyB64) {
+      const rawKey = b64ToBytes(keyB64);
+      return crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt']);
+    }
+
+    async function decryptJsonEnvelope(envelope, cryptoKey) {
+      const iv = b64ToBytes(envelope.iv);
+      const ciphertext = b64ToBytes(envelope.ciphertext);
+      const decryptedBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, ciphertext);
+      const jsonStr = new TextDecoder().decode(decryptedBuf);
+      return JSON.parse(jsonStr);
+    }
+
+    async function decryptBinaryBlobUrl(encPath, mimeType, cryptoKey) {
+      const res = await fetch(encPath);
+      if (!res.ok) throw new Error('Failed to fetch encrypted media: ' + encPath);
+      const buf = new Uint8Array(await res.arrayBuffer());
+      const iv = buf.slice(0, 12);
+      const ciphertext = buf.slice(12);
+      const decryptedBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, ciphertext);
+      const blob = new Blob([decryptedBuf], { type: mimeType || 'image/webp' });
+      return URL.createObjectURL(blob);
+    }
+
+    async function exchangeTurnstileTokenForKey(token) {
+      if (workerUrl && !workerUrl.includes('example.hu')) {
+        try {
+          const res = await fetch(workerUrl + '/api/vault/unlock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ turnstileToken: token }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.key) return data.key;
+          }
+        } catch (err) {
+          if (!isDemo) throw err;
+        }
+      }
+      if (isDemo) {
+        return DEMO_KEY_B64;
+      }
+      throw new Error('Could not verify Turnstile token with Worker.');
+    }
+
+    async function unlockAllSections(keyB64) {
+      const cryptoKey = await importAesKey(keyB64);
+      sessionStorage.setItem(STORAGE_KEY, keyB64);
+
+      // Hide all gate boxes and show unlocked banners
+      document.querySelectorAll('[data-vault-gate]').forEach((el) => {
+        el.setAttribute('hidden', 'hidden');
+      });
+      document.querySelectorAll('[data-vault-content]').forEach((el) => {
+        el.removeAttribute('hidden');
+      });
+
+      // 1. Render Protected Contact Details
+      const contactRoot = document.getElementById('vault-contact-target');
+      if (contactRoot && !contactRoot.dataset.loaded) {
+        contactRoot.dataset.loaded = 'true';
+        const envRes = await fetch('/vault/contact.enc.json');
+        const env = await envRes.json();
+        const contact = await decryptJsonEnvelope(env, cryptoKey);
+
+        const phonesList = contactRoot.querySelector('[data-phones-list]');
+        const emailsList = contactRoot.querySelector('[data-emails-list]');
+
+        if (phonesList && Array.isArray(contact.phones)) {
+          phonesList.innerHTML = contact.phones
+            .map((p) => {
+              const label = p.label?.[locale] || p.label?.hu || '';
+              const cleanTel = String(p.number).replace(/\s+/g, '');
+              return `<li><small>${label}</small><a href="tel:${cleanTel}">📞 ${p.number}</a></li>`;
+            })
+            .join('');
+        }
+
+        if (emailsList && Array.isArray(contact.emails)) {
+          emailsList.innerHTML = contact.emails
+            .map((e) => {
+              const label = e.label?.[locale] || e.label?.hu || '';
+              return `<li><small>${label}</small><a href="mailto:${e.address}">✉️ ${e.address}</a></li>`;
+            })
+            .join('');
+        }
+      }
+
+      // 2. Render Protected Staff Directory + Decrypt Staff Portraits
+      const staffRoot = document.getElementById('vault-staff-target');
+      if (staffRoot && !staffRoot.dataset.loaded) {
+        staffRoot.dataset.loaded = 'true';
+        const envRes = await fetch('/vault/staff.enc.json');
+        const env = await envRes.json();
+        const staff = await decryptJsonEnvelope(env, cryptoKey);
+        const grid = staffRoot.querySelector('[data-staff-grid]');
+
+        if (grid && Array.isArray(staff.members)) {
+          const cards = await Promise.all(
+            staff.members.map(async (m) => {
+              const role = m.role?.[locale] || m.role?.hu || '';
+              const bio = m.bio?.[locale] || m.bio?.hu || '';
+              let imgUrl = '';
+              if (m.photoEncPath) {
+                imgUrl = await decryptBinaryBlobUrl(m.photoEncPath, m.mimeType, cryptoKey);
+              }
+              return `
+                <article class="craft-card">
+                  <div class="encrypted-media-frame">
+                    <img src="${imgUrl}" alt="${m.name}" loading="lazy" />
+                  </div>
+                  <span class="group-meta-chip" style="display:inline-block;margin-bottom:0.5rem;">${m.group}</span>
+                  <h3>${m.name}</h3>
+                  <p style="font-weight:700;color:var(--color-primary-dark);font-size:0.9rem;margin-bottom:0.6rem;">${role}</p>
+                  <p style="font-size:0.93rem;">${bio}</p>
+                </article>
+              `;
+            })
+          );
+          grid.innerHTML = cards.join('');
+        }
+      }
+
+      // 3. Render Protected Photo Gallery + Decrypt Binary Album Photos
+      const galleryRoot = document.getElementById('vault-gallery-target');
+      if (galleryRoot && !galleryRoot.dataset.loaded) {
+        galleryRoot.dataset.loaded = 'true';
+        const envRes = await fetch('/vault/gallery.enc.json');
+        const env = await envRes.json();
+        const gallery = await decryptJsonEnvelope(env, cryptoKey);
+        const grid = galleryRoot.querySelector('[data-gallery-grid]');
+
+        if (grid && Array.isArray(gallery.albums)) {
+          const allPhotos = [];
+          for (const album of gallery.albums) {
+            const albumTitle = album.title?.[locale] || album.title?.hu || '';
+            for (const photo of album.photos || []) {
+              const caption = photo.caption?.[locale] || photo.caption?.hu || '';
+              const imgUrl = await decryptBinaryBlobUrl(photo.encPath, photo.mimeType, cryptoKey);
+              allPhotos.push(`
+                <figure class="craft-card" style="padding:1.1rem;">
+                  <div class="encrypted-media-frame" style="margin-bottom:0.75rem;">
+                    <img src="${imgUrl}" alt="${caption}" loading="lazy" />
+                  </div>
+                  <figcaption>
+                    <strong style="display:block;font-size:0.95rem;color:var(--color-text);">${caption}</strong>
+                    <small style="color:var(--color-text-muted);">${albumTitle} • ${album.date}</small>
+                  </figcaption>
+                </figure>
+              `);
+            }
+          }
+          grid.innerHTML = allPhotos.join('');
+        }
+      }
+    }
+
+    // Bind unlock buttons across all protected sections
+    document.querySelectorAll('[data-vault-unlock-btn]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const gateCard = btn.closest('[data-vault-gate]');
+        if (!gateCard) return;
+        const slot = gateCard.querySelector('[data-turnstile-slot]');
+        const statusEl = gateCard.querySelector('[data-vault-status]');
+
+        btn.setAttribute('disabled', 'disabled');
+        if (statusEl) statusEl.removeAttribute('hidden');
+
+        // If Cloudflare Turnstile script is loaded, render interactive/managed challenge
+        if (window.turnstile && slot) {
+          slot.innerHTML = '';
+          window.turnstile.render(slot, {
+            sitekey: siteKey,
+            callback: async function (token) {
+              try {
+                const keyB64 = await exchangeTurnstileTokenForKey(token);
+                await unlockAllSections(keyB64);
+              } catch (e) {
+                console.error(e);
+                btn.removeAttribute('disabled');
+              }
+            },
+          });
+        } else if (isDemo) {
+          // Offline / blocked third-party script fallback in local demo mode
+          const keyB64 = await exchangeTurnstileTokenForKey('demo-local-token');
+          await unlockAllSections(keyB64);
+        }
+      });
+    });
+
+    // Auto-unlock if already verified in current tab session
+    const cachedKey = sessionStorage.getItem(STORAGE_KEY);
+    if (cachedKey) {
+      unlockAllSections(cachedKey).catch(() => sessionStorage.removeItem(STORAGE_KEY));
+    }
+
+    // Contact form submission handler
+    const contactForm = document.getElementById('oc-contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const feedbackEl = document.getElementById('oc-contact-feedback');
+        if (submitBtn) submitBtn.setAttribute('disabled', 'disabled');
+
+        const formData = new FormData(contactForm);
+        const payload = Object.fromEntries(formData.entries());
+        payload.locale = locale;
+
+        try {
+          if (workerUrl && !workerUrl.includes('example.hu')) {
+            const res = await fetch(workerUrl + '/api/contact/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            if (!res.ok) throw new Error('Worker returned error');
+          }
+          if (feedbackEl) {
+            feedbackEl.textContent = contactForm.dataset.successMsg || 'Sent!';
+            feedbackEl.style.color = 'var(--color-secondary-dark)';
+            feedbackEl.removeAttribute('hidden');
+          }
+          contactForm.reset();
+        } catch (err) {
+          if (feedbackEl) {
+            feedbackEl.textContent = contactForm.dataset.errorMsg || 'Error';
+            feedbackEl.style.color = 'var(--color-primary-dark)';
+            feedbackEl.removeAttribute('hidden');
+          }
+        } finally {
+          if (submitBtn) submitBtn.removeAttribute('disabled');
+        }
+      });
+    }
+  })();
+</script>

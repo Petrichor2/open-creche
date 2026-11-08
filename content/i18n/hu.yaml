@@ -1,0 +1,73 @@
+nav:
+  about: "Bemutatkozás"
+  groups: "Csoportjaink"
+  schedule: "Napirend"
+  news: "Hírek és Események"
+  staff: "Munkatársaink"
+  gallery: "Galéria"
+  contact: "Kapcsolat"
+
+hero:
+  primaryCta: "Ismerje meg csoportjainkat"
+  secondaryCta: "Kapcsolatfelvétel"
+  openHoursLabel: "Nyitvatartás"
+  locationLabel: "Címünk"
+
+sections:
+  aboutTag: "Pedagógiánk"
+  groupsTag: "Csoportszobáink"
+  groupsTitle: "Bölcsődei és Óvodai Csoportjaink"
+  groupsSubtitle: "Kis létszámú, életkornak megfelelően kialakított csoportszobák, ahol minden gyermek biztonságban érzi magát."
+  capacityLabel: "Férőhely"
+  ageRangeLabel: "Korosztály"
+  typeCreche: "Bölcsőde"
+  typeKindergarten: "Óvoda"
+
+  scheduleTag: "Mindennapjaink"
+  newsTag: "Aktualitások"
+  newsTitle: "Hírek, Események és Naptár"
+  newsSubtitle: "Közelgő ünnepségeink, nyílt napok, szülői értekezletek és óvodai hírek."
+  eventDateLabel: "Időpont"
+  pinnedBadge: "Kiemelt"
+
+  staffTag: "Kik vigyáznak a gyermekekre?"
+  staffTitle: "Gondoskodó Munkatársaink"
+  staffSubtitle: "Szakképzett kisgyermeknevelők, óvodapedagógusok és dajkák, akik szívvel-lélekkel kísérik a gyermekek fejlődését."
+
+  galleryTag: "Életképek"
+  galleryTitle: "Pillanatképek mindennapjainkból"
+  gallerySubtitle: "Kézműveskedés, kerti játék és közös ünnepek emlékei."
+
+  contactTag: "Elérhetőség és Beiratkozás"
+  contactTitle: "Lépjen velünk kapcsolatba!"
+  contactSubtitle: "Kérdése van a beszoktatással, beiratkozással vagy szabad férőhelyekkel kapcsolatban? Írjon nekünk vagy hívjon minket bizalommal!"
+
+vault:
+  protectedBadge: "Adatvédelmi pajzs (Anti-Scrape)"
+  unlockTitle: "Védett tartalom megjelenítése"
+  unlockPrompt: "A gyermekek és pedagógusok adatainak védelme érdekében a telefonszámok, e-mail címek és fotók titkosítva vannak az automatikus adatgyűjtő robotok ellen."
+  unlockButton: "Emberi ellenőrzés és feloldás"
+  unlockedBadge: "Hitelesítve – Adatok feloldva"
+  unlocking: "Titkosított adatok dekódolása a böngészőben..."
+  error: "Az ellenőrzés nem sikerült. Kérjük, próbálja újra!"
+  phoneHeading: "Telefonszámaink"
+  emailHeading: "E-mail címeink"
+
+contactForm:
+  title: "Üzenetküldés közvetlenül az intézménynek"
+  subtitle: "Az űrlap elküldésével e-mail címünk nem kerül ki az oldalra, üzenetét biztonságosan továbbítjuk."
+  parentName: "Szülő / Gondviselő neve *"
+  parentEmail: "E-mail cím *"
+  parentPhone: "Telefonszám (opcionális)"
+  childAge: "Gyermek életkora (opcionális)"
+  subject: "Tárgy *"
+  message: "Üzenet *"
+  submit: "Üzenet biztonságos elküldése"
+  sending: "Küldés folyamatban..."
+  success: "Köszönjük! Üzenetét biztonságosan továbbítottuk intézményünk vezetőjének."
+  error: "Hiba történt az üzenet küldésekor. Kérjük, próbálja újra."
+
+footer:
+  rights: "Minden jog fenntartva."
+  privacyNote: "Az oldal Cloudflare Turnstile és AES-256-GCM titkosítással védi a gyermekek és munkatársak adatait."
+  adminLink: "Intézményi Admin (CMS)"

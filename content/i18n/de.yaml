@@ -1,0 +1,73 @@
+nav:
+  about: "Über uns"
+  groups: "Unsere Gruppen"
+  schedule: "Tagesablauf"
+  news: "Aktuelles & Termine"
+  staff: "Unser Team"
+  gallery: "Galerie"
+  contact: "Kontakt"
+
+hero:
+  primaryCta: "Unsere Gruppen entdecken"
+  secondaryCta: "Kontakt aufnehmen"
+  openHoursLabel: "Öffnungszeiten"
+  locationLabel: "Adresse"
+
+sections:
+  aboutTag: "Unsere Pädagogik"
+  groupsTag: "Gruppenräume"
+  groupsTitle: "Kinderkrippen- und Kindergartengruppen"
+  groupsSubtitle: "Kleine, altersgerecht gestaltete Gruppenräume, in denen sich jedes Kind geborgen und zu Hause fühlt."
+  capacityLabel: "Plätze"
+  ageRangeLabel: "Altersgruppe"
+  typeCreche: "Kinderkrippe"
+  typeKindergarten: "Kindergarten"
+
+  scheduleTag: "Unser Alltag"
+  newsTag: "Neuigkeiten"
+  newsTitle: "Nachrichten, Veranstaltungen & Kalender"
+  newsSubtitle: "Kommende Feste, Tage der offenen Tür, Elternabende und Neuigkeiten."
+  eventDateLabel: "Termin"
+  pinnedBadge: "Wichtig"
+
+  staffTag: "Wer betreut die Kinder?"
+  staffTitle: "Unser liebevolles Team"
+  staffSubtitle: "Qualifizierte Kleinkindpädagogen, Erzieherinnen und Betreuerinnen, die Ihre Kinder mit Herz und Geduld begleiten."
+
+  galleryTag: "Einblicke"
+  galleryTitle: "Momente aus unserem Alltag"
+  gallerySubtitle: "Basteln, Spielen im Garten und gemeinsame Jahreszeitenfeste."
+
+  contactTag: "Kontakt & Anmeldung"
+  contactTitle: "Nehmen Sie Kontakt mit uns auf"
+  contactSubtitle: "Haben Sie Fragen zur Eingewöhnung, Anmeldung oder freien Plätzen? Schreiben Sie uns oder rufen Sie uns an."
+
+vault:
+  protectedBadge: "Datenschutz-Schutzschild (Anti-Scrape)"
+  unlockTitle: "Geschützte Inhalte freischalten"
+  unlockPrompt: "Zum Schutz unserer Kinder und Pädagogen vor automatisierten Datensammlern sind Telefonnummern, E-Mail-Adressen und Fotos verschlüsselt."
+  unlockButton: "Bestätigen & Inhalte anzeigen"
+  unlockedBadge: "Bestätigt – Daten entschlüsselt"
+  unlocking: "Geschützte Daten werden im Browser entschlüsselt..."
+  error: "Überprüfung fehlgeschlagen. Bitte versuchen Sie es erneut."
+  phoneHeading: "Telefonnummern"
+  emailHeading: "E-Mail-Adressen"
+
+contactForm:
+  title: "Direkte Nachricht senden"
+  subtitle: "Ihre Nachricht wird sicher übermittelt, ohne dass unsere E-Mail-Adressen für Spam-Bots sichtbar werden."
+  parentName: "Name des Elternteils *"
+  parentEmail: "Ihre E-Mail-Adresse *"
+  parentPhone: "Telefonnummer (optional)"
+  childAge: "Alter des Kindes (optional)"
+  subject: "Betreff *"
+  message: "Nachricht *"
+  submit: "Nachricht sicher senden"
+  sending: "Wird gesendet..."
+  success: "Vielen Dank! Ihre Nachricht wurde sicher an unsere Einrichtung übermittelt."
+  error: "Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut."
+
+footer:
+  rights: "Alle Rechte vorbehalten."
+  privacyNote: "Geschützt durch Cloudflare Turnstile und AES-256-GCM-Verschlüsselung zum Schutz von Kindern und Mitarbeitern."
+  adminLink: "Verwaltung (CMS)"

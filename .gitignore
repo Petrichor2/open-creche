@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+worker/node_modules/
+
+# Astro build output
+dist/
+.astro/
+
+# Environment variables & local secrets
+.env
+.env.*
+!.env.example
+worker/.dev.vars
+
+# Raw unencrypted Privacy Vault files (NEVER commit to public repo!)
+.vault-raw/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

@@ -1,0 +1,44 @@
+/*
+ * OpenCreche Craft Design Tokens (Vanilla CSS)
+ * Warm, organic, non-SaaS visual language tailored for nurseries and kindergartens.
+ */
+:root {
+  /* Warm paper & earth tones (default "sunshine" palette, overridden by site.yaml if set) */
+  --bg-canvas: #FAF6F0;
+  --bg-surface: #F3ECE1;
+  --bg-elevated: #FFFFFF;
+  --bg-tint-sage: #E9F0EC;
+  --bg-tint-sun: #FBF2DC;
+  --bg-tint-clay: #F8E8DF;
+
+  --color-primary: #D96B43;
+  --color-primary-dark: #B8522E;
+  --color-secondary: #5B8266;
+  --color-secondary-dark: #43644C;
+  --color-accent: #E6B84C;
+  --color-text: #2C2523;
+  --color-text-muted: #685B56;
+  --color-border: #E2D7C5;
+  --color-border-strong: #CEBFA8;
+
+  /* Typography — friendly, warm, highly legible without external Google Fonts tracking */
+  --font-display: 'Nunito', 'Quicksand', 'Trebuchet MS', 'Hiragino Maru Gothic ProN', system-ui, -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+
+  /* Organic pebble & paper-cut border radii */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pebble-1: 28px 34px 24px 32px / 24px 30px 28px 34px;
+  --radius-pebble-2: 32px 24px 34px 26px / 28px 34px 24px 30px;
+  --radius-pill: 999px;
+
+  /* Soft tactile shadows (warm brown-tinted instead of cold black) */
+  --shadow-soft: 0 6px 20px -4px rgba(44, 37, 35, 0.07), 0 2px 6px -1px rgba(44, 37, 35, 0.04);
+  --shadow-card: 0 10px 28px -6px rgba(44, 37, 35, 0.09), 0 4px 10px -2px rgba(44, 37, 35, 0.05);
+  --shadow-offset: 4px 5px 0px var(--color-border-strong);
+
+  /* Layout spacing */
+  --container-max: 1160px;
+  --section-pad-y: clamp(3.5rem, 7vw, 6rem);
+}

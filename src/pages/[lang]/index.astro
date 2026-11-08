@@ -1,0 +1,385 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VaultGateCard from '../../components/vault/VaultGateCard.astro';
+import PrivacyVaultRuntime from '../../components/vault/PrivacyVaultRuntime.astro';
+import {
+  getSiteConfig,
+  getNavigationConfig,
+  getUiDictionary,
+  getAboutContent,
+  getScheduleContent,
+  getGroupsContent,
+  getNewsContent,
+} from '../../utils/content';
+
+export function getStaticPaths() {
+  const siteConfig = getSiteConfig();
+  return siteConfig.i18n.locales.map((loc) => ({
+    params: { lang: loc.code },
+  }));
+}
+
+const { lang } = Astro.params;
+const siteConfig = getSiteConfig();
+const defaultLocale = siteConfig.i18n.defaultLocale || 'hu';
+const locale = lang || defaultLocale;
+
+const navConfig = getNavigationConfig();
+const ui = getUiDictionary(locale, defaultLocale);
+const about = getAboutContent(locale, defaultLocale);
+const schedule = getScheduleContent(locale, defaultLocale);
+const groups = getGroupsContent(locale, defaultLocale);
+const newsItems = getNewsContent(locale, defaultLocale);
+
+const siteTitle = siteConfig.site.title[locale] || siteConfig.site.title[defaultLocale];
+const siteTagline = siteConfig.site.tagline[locale] || siteConfig.site.tagline[defaultLocale];
+const heroSubtitle = siteConfig.site.heroSubtitle[locale] || siteConfig.site.heroSubtitle[defaultLocale];
+const address = siteConfig.site.location.address[locale] || siteConfig.site.location.address[defaultLocale];
+const openingHours = siteConfig.site.location.openingHours[locale] || siteConfig.site.location.openingHours[defaultLocale];
+
+const iconMap: Record<string, string> = {
+  leaf: '🌿',
+  heart: '💛',
+  apple: '🍎',
+  music: '🎵',
+  ladybug: '🐞',
+  hedgehog: '🦔',
+  owl: '🦉',
+};
+---
+
+<BaseLayout locale={locale} siteConfig={siteConfig} ui={ui} navItems={navConfig.header}>
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      <div>
+        <span class="section-tag">🌱 {siteTitle}</span>
+        <h1>{siteTagline}</h1>
+        <p class="hero-lead">{heroSubtitle}</p>
+
+        <div class="btn-group">
+          <a href="#groups" class="btn btn-primary">{ui.hero?.primaryCta}</a>
+          <a href="#contact" class="btn btn-secondary">{ui.hero?.secondaryCta}</a>
+        </div>
+
+        <div class="hero-info-strip">
+          <div class="info-item">
+            <strong>📍 {ui.hero?.locationLabel}</strong>
+            <span>{siteConfig.site.location.postalCode} {siteConfig.site.location.city}, {address}</span>
+          </div>
+          <div class="info-item">
+            <strong>🕒 {ui.hero?.openHoursLabel}</strong>
+            <span>{openingHours}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Handcrafted SVG Illustration Card -->
+      <div class="hero-illustration-card">
+        <svg viewBox="0 0 480 380" width="100%" height="auto" role="img" aria-label={siteTitle}>
+          <rect width="480" height="380" rx="22" fill="#FBF4E4" />
+          <!-- Warm Sun -->
+          <circle cx="385" cy="78" r="44" fill="#E6B84C" opacity="0.9" />
+          <circle cx="385" cy="78" r="56" fill="#E6B84C" opacity="0.22" />
+          <!-- Soft Clouds -->
+          <path d="M70 85 Q85 68 105 78 Q125 62 145 80 Q162 82 158 98 L65 98 Q55 90 70 85 Z" fill="#FFFFFF" />
+          <!-- Rolling Garden Hills -->
+          <path d="M0 280 Q140 220 290 265 T480 250 L480 380 L0 380 Z" fill="#84A98C" />
+          <path d="M0 310 Q190 260 350 295 T480 285 L480 380 L0 380 Z" fill="#5B8266" />
+          <!-- Cozy Nursery House -->
+          <rect x="145" y="165" width="170" height="125" rx="8" fill="#FAF6F0" stroke="#2C2523" stroke-width="3.5" />
+          <path d="M125 170 L230 95 L335 170 Z" fill="#D96B43" stroke="#2C2523" stroke-width="3.5" stroke-linejoin="round" />
+          <!-- Arched Wooden Door -->
+          <path d="M210 290 L210 225 A20 20 0 0 1 250 225 L250 290 Z" fill="#E6B84C" stroke="#2C2523" stroke-width="3" />
+          <circle cx="242" cy="258" r="3" fill="#2C2523" />
+          <!-- Sunny Windows -->
+          <rect x="165" y="195" width="32" height="32" rx="6" fill="#FBF2DC" stroke="#2C2523" stroke-width="3" />
+          <rect x="263" y="195" width="32" height="32" rx="6" fill="#FBF2DC" stroke="#2C2523" stroke-width="3" />
+          <!-- Garden Tree -->
+          <rect x="78" y="220" width="14" height="65" rx="4" fill="#8B5E3C" stroke="#2C2523" stroke-width="3" />
+          <circle cx="85" cy="195" r="38" fill="#5B8266" stroke="#2C2523" stroke-width="3" />
+          <circle cx="68" cy="210" r="24" fill="#84A98C" />
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT & PEDAGOGY SECTION -->
+  {
+    siteConfig.features.about && (
+      <section id="about" class="section section-alt">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">🌿 {ui.sections?.aboutTag}</span>
+            <h2>{about.frontmatter.title}</h2>
+            <p>{about.frontmatter.subtitle}</p>
+          </div>
+
+          <div class="about-prose" set:html={about.html} />
+
+          {Array.isArray(about.frontmatter.highlights) && (
+            <div class="grid-2">
+              {about.frontmatter.highlights.map((item: any) => (
+                <article class="craft-card">
+                  <div class="highlight-icon" aria-hidden="true">
+                    {iconMap[item.icon] || '✨'}
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p style="margin-top: 0.45rem;">{item.description}</p>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- GROUPS / ROOMS SECTION -->
+  {
+    siteConfig.features.groups && (
+      <section id="groups" class="section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">🏡 {ui.sections?.groupsTag}</span>
+            <h2>{ui.sections?.groupsTitle}</h2>
+            <p>{ui.sections?.groupsSubtitle}</p>
+          </div>
+
+          <div class="grid-3">
+            {groups.map((grp: any) => (
+              <article class="craft-card">
+                <div class="group-badge-row">
+                  <span style="font-size: 2rem;" aria-hidden="true">
+                    {iconMap[grp.icon] || '🌼'}
+                  </span>
+                  <span
+                    class="group-type-pill"
+                    style={`background-color: ${grp.badgeColor || 'var(--color-primary)'};`}
+                  >
+                    {grp.type === 'creche' ? ui.sections?.typeCreche : ui.sections?.typeKindergarten}
+                  </span>
+                </div>
+                <h3>{grp.name}</h3>
+                <p style="margin-top: 0.5rem; font-weight: 600; color: var(--color-text);">{grp.summary}</p>
+                <p style="margin-top: 0.65rem; font-size: 0.93rem;">{grp.details}</p>
+
+                <div class="group-meta-list">
+                  <span class="group-meta-chip">
+                    👶 {ui.sections?.ageRangeLabel}: {grp.ageRange}
+                  </span>
+                  <span class="group-meta-chip">
+                    🪑 {ui.sections?.capacityLabel}: {grp.capacity} fő
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- DAILY SCHEDULE SECTION -->
+  {
+    siteConfig.features.dailySchedule && (
+      <section id="schedule" class="section section-alt">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">☀️ {ui.sections?.scheduleTag}</span>
+            <h2>{schedule.title}</h2>
+            <p>{schedule.description}</p>
+          </div>
+
+          <div class="schedule-timeline">
+            {(schedule.items || []).map((item: any) => (
+              <div class="schedule-row">
+                <div class="schedule-time">{item.time}</div>
+                <div>
+                  <h3 style="font-size: 1.15rem;">{item.title}</h3>
+                  <p style="font-size: 0.94rem; margin-top: 0.2rem;">{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- NEWS & EVENTS CALENDAR SECTION -->
+  {
+    siteConfig.features.newsAndEvents && (
+      <section id="news" class="section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">📅 {ui.sections?.newsTag}</span>
+            <h2>{ui.sections?.newsTitle}</h2>
+            <p>{ui.sections?.newsSubtitle}</p>
+          </div>
+
+          <div class="grid-3">
+            {newsItems.map((post: any) => (
+              <article class="craft-card">
+                <div class="news-meta">
+                  {post.pinned && <span class="pinned-pill">⭐ {ui.sections?.pinnedBadge}</span>}
+                  {post.eventDate && (
+                    <span class="event-date-badge">
+                      🗓️ {post.eventDate} {post.eventTime ? `(${post.eventTime})` : ''}
+                    </span>
+                  )}
+                </div>
+                <h3>{post.title}</h3>
+                <p style="margin-top: 0.55rem; font-weight: 600; color: var(--color-text); font-size: 0.95rem;">
+                  {post.summary}
+                </p>
+                <div style="margin-top: 0.75rem; font-size: 0.91rem;" set:html={post.html} />
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- PROTECTED STAFF DIRECTORY SECTION (AES-256-GCM + Turnstile) -->
+  {
+    siteConfig.features.staffDirectory && (
+      <section id="staff" class="section section-alt">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">👩‍🏫 {ui.sections?.staffTag}</span>
+            <h2>{ui.sections?.staffTitle}</h2>
+            <p>{ui.sections?.staffSubtitle}</p>
+          </div>
+
+          <VaultGateCard uiVault={ui.vault} />
+
+          <div id="vault-staff-target" data-vault-content hidden>
+            <div class="vault-unlocked-banner">✅ {ui.vault?.unlockedBadge}</div>
+            <div class="grid-3" data-staff-grid />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- PROTECTED PHOTO GALLERY SECTION (AES-256-GCM + Turnstile) -->
+  {
+    siteConfig.features.photoGallery && (
+      <section id="gallery" class="section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">🎨 {ui.sections?.galleryTag}</span>
+            <h2>{ui.sections?.galleryTitle}</h2>
+            <p>{ui.sections?.gallerySubtitle}</p>
+          </div>
+
+          <VaultGateCard uiVault={ui.vault} />
+
+          <div id="vault-gallery-target" data-vault-content hidden>
+            <div class="vault-unlocked-banner">✅ {ui.vault?.unlockedBadge}</div>
+            <div class="grid-3" data-gallery-grid />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- CONTACT & PROTECTED PHONE/EMAIL + SERVERLESS CONTACT FORM -->
+  <section id="contact" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">✉️ {ui.sections?.contactTag}</span>
+        <h2>{ui.sections?.contactTitle}</h2>
+        <p>{ui.sections?.contactSubtitle}</p>
+      </div>
+
+      <div class="contact-layout">
+        <!-- Left Column: Protected Phone Numbers & Emails -->
+        <div>
+          <VaultGateCard uiVault={ui.vault} />
+
+          <div id="vault-contact-target" class="craft-card" data-vault-content hidden>
+            <div class="vault-unlocked-banner" style="margin-bottom: 1rem;">
+              ✅ {ui.vault?.unlockedBadge}
+            </div>
+            <h3>📞 {ui.vault?.phoneHeading}</h3>
+            <ul class="contact-list" data-phones-list></ul>
+
+            <h3 style="margin-top: 1.5rem;">✉️ {ui.vault?.emailHeading}</h3>
+            <ul class="contact-list" data-emails-list></ul>
+          </div>
+        </div>
+
+        <!-- Right Column: Zero-Email-Exposure Contact Form via CF Worker -->
+        {
+          siteConfig.features.contactForm && (
+            <div class="craft-card">
+              <h3>{ui.contactForm?.title}</h3>
+              <p style="font-size: 0.92rem; margin-top: 0.35rem; margin-bottom: 1.25rem;">
+                {ui.contactForm?.subtitle}
+              </p>
+
+              <form
+                id="oc-contact-form"
+                data-success-msg={ui.contactForm?.success}
+                data-error-msg={ui.contactForm?.error}
+              >
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label for="cf-name">{ui.contactForm?.parentName}</label>
+                    <input id="cf-name" name="parentName" type="text" required />
+                  </div>
+                  <div class="form-field">
+                    <label for="cf-email">{ui.contactForm?.parentEmail}</label>
+                    <input id="cf-email" name="parentEmail" type="email" required />
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label for="cf-phone">{ui.contactForm?.parentPhone}</label>
+                    <input id="cf-phone" name="parentPhone" type="tel" />
+                  </div>
+                  <div class="form-field">
+                    <label for="cf-age">{ui.contactForm?.childAge}</label>
+                    <input id="cf-age" name="childAge" type="text" />
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="cf-subject">{ui.contactForm?.subject}</label>
+                  <input id="cf-subject" name="subject" type="text" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="cf-message">{ui.contactForm?.message}</label>
+                  <textarea id="cf-message" name="message" rows="4" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  📨 {ui.contactForm?.submit}
+                </button>
+                <p
+                  id="oc-contact-feedback"
+                  hidden
+                  style="margin-top: 0.85rem; font-weight: 700; text-align: center;"
+                />
+              </form>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Client-side WebCrypto + Turnstile Controller -->
+  <PrivacyVaultRuntime
+    locale={locale}
+    turnstileSiteKey={siteConfig.security.turnstileSiteKey}
+    workerBaseUrl={siteConfig.security.workerBaseUrl}
+    demoMode={siteConfig.security.demoMode}
+    uiVault={ui.vault}
+  />
+</BaseLayout>

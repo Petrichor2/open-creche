@@ -1,0 +1,10 @@
+id: "katica"
+order: 1
+name: "Katica Csoport"
+type: "creche"
+ageRange: "1,5 – 3 éves korig"
+capacity: 12
+badgeColor: "#D96B43"
+icon: "ladybug"
+summary: "Bölcsődei csoportunk, ahol a legkisebbek puha, biztonságos környezetben, egyéni tempóban szokhatnak be."
+details: "A Katica csoportban két szakképzett kisgyermeknevelő és egy dajka gondoskodik a gyermekekről. Kiemelt figyelmet fordítunk az ölbeli játékokra, mondókákra és az érzelmi biztonság megteremtésére."

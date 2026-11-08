@@ -1,0 +1,27 @@
+{
+  "name": "open-creche",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Privacy-first, multilingual, config-driven website template for nurseries, creches, and kindergartens",
+  "scripts": {
+    "dev": "node ./node_modules/astro/astro.js dev",
+    "start": "node ./node_modules/astro/astro.js dev",
+    "build": "node ./node_modules/astro/astro.js build",
+    "preview": "node ./node_modules/astro/astro.js preview",
+    "vault:init": "node scripts/generate-keys.mjs",
+    "vault:encrypt": "node scripts/vault-cli.mjs encrypt",
+    "vault:decrypt": "node scripts/vault-cli.mjs decrypt",
+    "vault:demo": "node scripts/vault-cli.mjs demo",
+    "i18n:translate": "node scripts/auto-translate.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.4.0",
+    "marked": "^15.0.7",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "typescript": "^5.8.2"
+  }
+}
