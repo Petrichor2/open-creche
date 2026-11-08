@@ -31,24 +31,34 @@ It enables child-care institutions to launch a warm, human-crafted, custom-domai
 
 ## 🏗️ Architecture Overview
 
-```text
-+-----------------------------------------------------------------------+
-|                           Parent / Visitor                            |
-|                        (Web Browser + WebCrypto)                      |
-+-----------------------------------+-----------------------------------+
-                                    |
-                  +-----------------+-----------------+
-                  |                                   |
-                  v (1. Static HTML/CSS & .enc files) v (2. Turnstile Token / Form)
-+-----------------------------------+   +-------------------------------+
-|           GitHub Pages            |   |       Cloudflare Worker       |
-|       (Static Astro Build)        |   |   (Turnstile + Auth + Mail)   |
-|                                   |   |                               |
-| - Multilingual Pages (/en, /hu..) |   | - Validates Turnstile Token   |
-| - Vanilla CSS Theme               |   | - Releases AES Decryption Key |
-| - Encrypted Contact/Staff JSON    |   | - Sends Contact Emails        |
-| - Encrypted Gallery Photos (.enc) |   | - GitHub OAuth for Admin CMS  |
-+-----------------------------------+   +-------------------------------+
+```mermaid
+flowchart TB
+    Visitor["👨‍👩‍👧 Parent / Visitor<br/>(Web Browser + WebCrypto API)"]
+
+    subgraph GHPages["GitHub Pages (Static Astro Build)"]
+        direction TB
+        Pages["Multilingual HTML & Vanilla CSS<br/>(/hu, /en, /de)"]
+        VaultJSON["Encrypted Contact & Staff Manifests<br/>(public/vault/*.enc.json)"]
+        VaultMedia["Encrypted Gallery & Staff Photos<br/>(public/vault-media/**/*.enc)"]
+    end
+
+    subgraph CF["Cloudflare Edge (Free Tier)"]
+        direction TB
+        Turnstile["Cloudflare Turnstile<br/>(Anti-Scrape Challenge)"]
+        Worker["Cloudflare Worker<br/>(/api/vault/unlock, /api/contact/send, /api/oauth)"]
+    end
+
+    Resend["📨 Resend Email API"]
+    GHRepo["📦 GitHub Repository<br/>(Sveltia CMS + GitHub Models Auto-Translate)"]
+
+    Visitor -->|"1. Fetches static HTML, CSS & .enc blobs"| GHPages
+    Visitor -->|"2. Solves human challenge"| Turnstile
+    Visitor -->|"3. Sends Turnstile token / Contact form"| Worker
+    Worker -->|"4. Validates token via siteverify"| Turnstile
+    Worker -->|"5. Releases AES-256-GCM Master Key"| Visitor
+    Worker -->|"6. Forwards contact form email"| Resend
+    Worker <-->|"7. GitHub OAuth for /admin CMS"| GHRepo
+    GHRepo -->|"8. GitHub Actions builds & deploys"| GHPages
 ```
 
 For a deep dive into the system design, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

@@ -132,9 +132,20 @@ To prevent nursery staff from having to manually translate every announcement or
    - When an editor creates or updates a file in the `defaultLocale` (e.g., `content/news/hu/2026-tavaszi-nyilt-nap.md`), `scripts/auto-translate.mjs` computes a SHA-256 hash of the source content (`sourceHash`).
    - For each target locale configured in `config/site.yaml` (e.g., `en`, `de`), it checks if the corresponding file exists and whether its `_translationMeta.sourceHash` matches the current source file.
    - If the target file is missing or outdated—and does not have `_translationMeta.manualOverride: true`—the script translates the YAML/Markdown content while strictly preserving keys, dates, icons, and formatting.
-3. **Commit-Back Workflow:**
-   - The GitHub Action commits the newly generated or updated translation files directly back to the repository (`chore(i18n): auto-translate content [skip ci]`) before building and deploying the Astro site to GitHub Pages.
-   - Because translations are committed to Git, staff can review or manually refine any translation in the `/admin` CMS at any time.
+### Commit-Back Workflow
+- The GitHub Action commits the newly generated or updated translation files directly back to the repository (`chore(i18n): auto-translate content [skip ci]`) before building and deploying the Astro site to GitHub Pages.
+- Because translations are committed to Git, staff can review or manually refine any translation in the `/admin` CMS at any time.
+
+```mermaid
+flowchart LR
+    Editor["👩‍🏫 Editor / CMS<br/>Updates content/news/hu/*.md"] --> Push["Git Push to main"]
+    Push --> GHA["⚙️ GitHub Action<br/>scripts/auto-translate.mjs"]
+    GHA --> Check{"Is target (en, de)<br/>missing or outdated?"}
+    Check -->|"No / manualOverride: true"| Build["🚀 Astro Build & Deploy"]
+    Check -->|"Yes"| LLM["🤖 GitHub Models API<br/>(Free via GITHUB_TOKEN)"]
+    LLM --> Commit["💾 Commit translated files<br/>with _translationMeta"]
+    Commit --> Build
+```
 
 ---
 
@@ -154,6 +165,25 @@ To ensure the website feels welcoming to parents and authentic to a childcare in
 ---
 
 ## 6. Component Data Flow
+
+```mermaid
+flowchart TD
+    subgraph BuildTime["1. Build-Time Pipeline (GitHub Actions + Astro)"]
+        Config["config/site.yaml & content/**"] --> Astro["Astro Static Builder"]
+        RawVault[".vault-raw/* (Local / CMS)"] -->|"AES-256-GCM Encrypt"| EncFiles["public/vault/*.enc.json & *.enc"]
+        Astro --> Dist["Static HTML + Vanilla CSS (dist/)"]
+        EncFiles --> Dist
+    end
+
+    subgraph Runtime["2. Browser Runtime (Parent Visit)"]
+        Dist --> Browser["Web Browser"]
+        Browser -->|"Public SEO Content"| DOM["Immediate Render:<br/>About, Groups, Schedule, News"]
+        Browser -->|"Protected Sections"| Gate["<VaultGateCard /> (Turnstile)"]
+        Gate -->|"POST /api/vault/unlock"| Worker["Cloudflare Worker"]
+        Worker -->|"Validates Turnstile -> Returns AES Key"| WebCrypto["window.crypto.subtle.decrypt()"]
+        WebCrypto --> UnlockedDOM["In-Memory Decryption:<br/>Phones, Emails, Staff & Gallery Photos"]
+    end
+```
 
 ### Public Content Flow (Build Time)
 1. Astro reads `config/site.yaml` and `content/**`.
