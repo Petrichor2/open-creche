@@ -137,6 +137,7 @@ The Cloudflare Worker validates Turnstile tokens, releases the AES decryption ke
    - **Apex domain (`@`):** Add `A` records pointing to GitHub Pages IPs (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`) or a `CNAME` flattened record pointing to `<your-username>.github.io`.
    - **`www` subdomain:** Add a `CNAME` record pointing to `<your-username>.github.io`.
    - Set Cloudflare SSL/TLS mode to **Full (Strict)**.
+5. **Update `site.url` in `config/site.yaml`** to your custom domain (e.g., `https://www.napsugar-ovi.hu`). The deployment base path is derived from this URL, so as soon as it points to a domain root, all internal links are generated without the GitHub Pages `/<repo>/` prefix. Also update `public/admin/config.yml`'s `public_folder` accordingly and commit the change.
 5. Once DNS propagates, check **"Enforce HTTPS"** in GitHub Pages settings.
 
 ---
