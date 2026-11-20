@@ -14,6 +14,9 @@ const defaultLocale = siteConfig.i18n.defaultLocale;
 const siteTitle = siteConfig.site.title[locale] || siteConfig.site.title[defaultLocale];
 const siteTagline = siteConfig.site.tagline[locale] || siteConfig.site.tagline[defaultLocale];
 const colors = siteConfig.theme?.colors || {};
+// Deployment base path ("https://user.github.io/repo" -> "/repo/", custom domains -> "/")
+const rawBase = import.meta.env.BASE_URL;
+const baseUrl = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 ---
 
 <!doctype html>
@@ -23,7 +26,7 @@ const colors = siteConfig.theme?.colors || {};
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{siteTitle} — {siteTagline}</title>
     <meta name="description" content={siteTagline} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style
       define:vars={{
@@ -42,7 +45,7 @@ const colors = siteConfig.theme?.colors || {};
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a href={`/${locale}/`} class="brand-link">
+        <a href={`${baseUrl}${locale}/`} class="brand-link">
           <span class="brand-mark" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D96B43" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5" fill="#E6B84C" />
@@ -76,7 +79,7 @@ const colors = siteConfig.theme?.colors || {};
           {
             siteConfig.i18n.locales.map((loc) => (
               <a
-                href={`/${loc.code}/`}
+                href={`${baseUrl}${loc.code}/`}
                 class={`lang-pill ${loc.code === locale ? 'active' : ''}`}
                 hreflang={loc.code}
               >
@@ -103,7 +106,7 @@ const colors = siteConfig.theme?.colors || {};
             © {new Date().getFullYear()} {siteTitle}. {ui.footer?.rights}
           </p>
           <p style="margin-top: 0.3rem;">
-            <a href="/admin/">{ui.footer?.adminLink}</a>
+            <a href={`${baseUrl}admin/`}>{ui.footer?.adminLink}</a>
           </p>
         </div>
       </div>

@@ -11,7 +11,11 @@ This single file controls the institution's identity, enabled languages, visual 
 ```yaml
 # config/site.yaml
 site:
-  # Public production URL (configured in Cloudflare DNS & GitHub Pages)
+  # Public production URL (configured in Cloudflare DNS & GitHub Pages).
+  # The deployment base path is derived from this URL's pathname:
+  #   - "https://<user>.github.io/<repo>" -> internal links get the "/<repo>/" prefix (project site)
+  #   - "https://www.my-creche.hu"         -> links are served from the domain root ("/")
+  # Update this URL when you attach a custom domain and all links adjust automatically.
   url: "https://napsugar-ovi.example.hu"
   
   # Institution type: "creche" | "kindergarten" | "combined"

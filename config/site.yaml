@@ -1,6 +1,10 @@
 # Global Site Configuration for OpenCreche
 site:
-  url: "https://napsugar-ovi.example.hu"
+  # Canonical site URL. The deployment base path is derived from this URL's pathname:
+  #   - "https://<user>.github.io/<repo>" -> site is served under "/<repo>/" (GitHub Pages project site)
+  #   - "https://www.my-creche.hu"         -> site is served at the domain root ("/")
+  # Update this URL when you attach a custom domain and all links adjust automatically.
+  url: "https://petrichor2.github.io/open-creche"
   type: "combined" # "creche" | "kindergarten" | "combined"
 
   title:

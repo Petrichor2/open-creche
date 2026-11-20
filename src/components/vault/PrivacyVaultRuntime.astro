@@ -24,6 +24,7 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
   data-sitekey={turnstileSiteKey}
   data-worker={workerBaseUrl}
   data-demo={demoMode ? 'true' : 'false'}
+  data-base={import.meta.env.BASE_URL}
   data-error-msg={uiVault?.error || 'Verification failed'}
   hidden
 ></div>
@@ -39,6 +40,10 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
     const siteKey = configEl.dataset.sitekey || '1x00000000000000000000AA';
     const workerUrl = (configEl.dataset.worker || '').replace(/\/$/, '');
     const isDemo = configEl.dataset.demo === 'true';
+    // Deployment base path ("https://user.github.io/repo" -> "/repo/", custom domains -> "/").
+    // Encrypted manifests store root-absolute asset paths ("/vault-media/..."), so they are
+    // prefixed with the base at fetch time to work on project pages subpath deployments.
+    const basePath = (configEl.dataset.base || '/').replace(/\/+$/, '');
 
     function b64ToBytes(b64) {
       const bin = atob(b64);
@@ -109,7 +114,7 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
       const contactRoot = document.getElementById('vault-contact-target');
       if (contactRoot && !contactRoot.dataset.loaded) {
         contactRoot.dataset.loaded = 'true';
-        const envRes = await fetch('/vault/contact.enc.json');
+        const envRes = await fetch(basePath + '/vault/contact.enc.json');
         const env = await envRes.json();
         const contact = await decryptJsonEnvelope(env, cryptoKey);
 
@@ -140,7 +145,7 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
       const staffRoot = document.getElementById('vault-staff-target');
       if (staffRoot && !staffRoot.dataset.loaded) {
         staffRoot.dataset.loaded = 'true';
-        const envRes = await fetch('/vault/staff.enc.json');
+        const envRes = await fetch(basePath + '/vault/staff.enc.json');
         const env = await envRes.json();
         const staff = await decryptJsonEnvelope(env, cryptoKey);
         const grid = staffRoot.querySelector('[data-staff-grid]');
@@ -152,7 +157,7 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
               const bio = m.bio?.[locale] || m.bio?.hu || '';
               let imgUrl = '';
               if (m.photoEncPath) {
-                imgUrl = await decryptBinaryBlobUrl(m.photoEncPath, m.mimeType, cryptoKey);
+                imgUrl = await decryptBinaryBlobUrl(basePath + m.photoEncPath, m.mimeType, cryptoKey);
               }
               return `
                 <article class="craft-card">
@@ -175,7 +180,7 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
       const galleryRoot = document.getElementById('vault-gallery-target');
       if (galleryRoot && !galleryRoot.dataset.loaded) {
         galleryRoot.dataset.loaded = 'true';
-        const envRes = await fetch('/vault/gallery.enc.json');
+        const envRes = await fetch(basePath + '/vault/gallery.enc.json');
         const env = await envRes.json();
         const gallery = await decryptJsonEnvelope(env, cryptoKey);
         const grid = galleryRoot.querySelector('[data-gallery-grid]');
@@ -186,7 +191,7 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
             const albumTitle = album.title?.[locale] || album.title?.hu || '';
             for (const photo of album.photos || []) {
               const caption = photo.caption?.[locale] || photo.caption?.hu || '';
-              const imgUrl = await decryptBinaryBlobUrl(photo.encPath, photo.mimeType, cryptoKey);
+              const imgUrl = await decryptBinaryBlobUrl(basePath + photo.encPath, photo.mimeType, cryptoKey);
               allPhotos.push(`
                 <figure class="craft-card" style="padding:1.1rem;">
                   <div class="encrypted-media-frame" style="margin-bottom:0.75rem;">
