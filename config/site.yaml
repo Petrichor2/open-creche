@@ -24,15 +24,18 @@ site:
 
   location:
     country: "Magyarország"
-    postalCode: "1024"
-    city: "Budapest"
+    # NOTE: These are clearly fictitious DEMO values (nonexistent postal code "0000",
+    # a placeholder city and street, and null-island coordinates). Replace them with
+    # your institution's real address when deploying.
+    postalCode: "0000"
+    city: "Példaváros"
     address:
-      hu: "Kis Rókus utca 12."
-      en: "12 Kis Rókus Street"
-      de: "Kis Rókus Straße 12"
+      hu: "Példa utca 42."
+      en: "42 Example Street"
+      de: "Beispielstraße 42"
     coordinates:
-      lat: 47.5105
-      lng: 19.0265
+      lat: 0
+      lng: 0
     openingHours:
       hu: "Hétfő – Péntek: 07:00 – 17:00"
       en: "Monday – Friday: 07:00 – 17:00"

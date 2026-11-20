@@ -1,0 +1,160 @@
+---
+/**
+ * DemoNotice.astro
+ *
+ * Warm, tactile "this is a demo site" dialog shown once per browser session when
+ * `security.demoMode: true` in `config/site.yaml`. It makes it unmistakable that
+ * the deployment is a public sample of the OpenCreche template and that every
+ * institution detail (names, phones, addresses, photos) is illustrative.
+ *
+ * Styling follows the craft design tokens (warm paper, pebble radii, terracotta)
+ * defined in `src/styles/tokens.css` — no external UI frameworks.
+ */
+interface Props {
+  title: string;
+  body: string;
+  accept: string;
+}
+
+const { title, body, accept } = Astro.props;
+---
+
+<div class="demo-notice-overlay" id="demo-notice-overlay" hidden>
+  <div
+    class="demo-notice-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="demo-notice-title"
+    aria-describedby="demo-notice-body"
+  >
+    <div class="demo-notice-badge" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5" fill="var(--color-accent)" stroke="none" />
+        <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+      </svg>
+    </div>
+    <h2 class="demo-notice-title" id="demo-notice-title">{title}</h2>
+    <p class="demo-notice-body" id="demo-notice-body">{body}</p>
+    <button type="button" class="demo-notice-btn" id="demo-notice-accept">{accept}</button>
+  </div>
+</div>
+
+<style>
+  .demo-notice-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    background: rgba(44, 37, 35, 0.45);
+    backdrop-filter: blur(2px);
+  }
+
+  .demo-notice-overlay[hidden] {
+    display: none;
+  }
+
+  .demo-notice-card {
+    max-width: 26rem;
+    background: var(--bg-elevated, #ffffff);
+    border: 2px solid var(--color-border-strong, #cebfa8);
+    border-radius: var(--radius-pebble-1, 28px 34px 24px 32px / 24px 30px 28px 34px);
+    box-shadow: var(--shadow-card);
+    padding: 2rem 1.75rem 1.75rem;
+    text-align: center;
+  }
+
+  .demo-notice-badge {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0 auto 0.9rem;
+    color: var(--color-primary, #d96b43);
+    background: var(--bg-tint-sun, #fbf2dc);
+    border: 2px dashed var(--color-accent, #e6b84c);
+    border-radius: var(--radius-pill, 999px);
+  }
+
+  .demo-notice-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text, #2c2523);
+    margin-bottom: 0.6rem;
+  }
+
+  .demo-notice-body {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-text-muted, #685b56);
+    margin-bottom: 1.4rem;
+  }
+
+  .demo-notice-btn {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    padding: 0.65rem 1.6rem;
+    background: var(--color-primary, #d96b43);
+    color: #ffffff;
+    border: 2px solid var(--color-primary-dark, #b8522e);
+    border-radius: var(--radius-pill, 999px);
+    box-shadow: 0 4px 0 var(--color-primary-dark, #b8522e);
+    cursor: pointer;
+  }
+
+  .demo-notice-btn:hover {
+    background: var(--color-primary-dark, #b8522e);
+  }
+
+  .demo-notice-btn:focus-visible {
+    outline: 3px solid var(--color-accent, #e6b84c);
+    outline-offset: 2px;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var overlay = document.getElementById('demo-notice-overlay');
+    if (!overlay) return;
+    var STORAGE_KEY = 'oc_demo_notice_dismissed';
+
+    // Show once per browser session; a page reload or a return visit in the same
+    // session must not nag the visitor again.
+    try {
+      if (sessionStorage.getItem(STORAGE_KEY) === '1') {
+        overlay.remove();
+        return;
+      }
+    } catch (err) {
+      /* Storage unavailable (e.g. strict privacy mode) — simply show the notice. */
+    }
+
+    overlay.removeAttribute('hidden');
+
+    var acceptBtn = document.getElementById('demo-notice-accept');
+    if (acceptBtn) acceptBtn.focus();
+
+    function dismiss() {
+      overlay.setAttribute('hidden', 'hidden');
+      try {
+        sessionStorage.setItem(STORAGE_KEY, '1');
+      } catch (err) {
+        /* Ignore storage failures. */
+      }
+    }
+
+    if (acceptBtn) acceptBtn.addEventListener('click', dismiss);
+
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) dismiss();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !overlay.hasAttribute('hidden')) dismiss();
+    });
+  })();
+</script>
