@@ -71,3 +71,8 @@ footer:
   rights: "Minden jog fenntartva."
   privacyNote: "Az oldal Cloudflare Turnstile és AES-256-GCM titkosítással védi a gyermekek és munkatársak adatait."
   adminLink: "Intézményi Admin (CMS)"
+
+demoNotice:
+  title: "Ez egy bemutató (demó) weboldal"
+  body: "Ez az oldal az OpenCreche nyílt forráskódú sablon nyilvános minta telepítése, nem valós bölcsőde vagy óvoda honlapja. A feltüntetett nevek, telefonszámok, címek és fotók kizárólag illusztratív mintaadatok."
+  accept: "Megértettem, folytatom"

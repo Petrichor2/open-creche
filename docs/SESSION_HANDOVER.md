@@ -25,6 +25,11 @@
    - **Free AI Auto-Translation (`scripts/auto-translate.mjs` & `.github/workflows/deploy.yml`):**
      - **Fixed on 2026-11-20:** the original GitHub Models provider (`models.inference.ai.azure.com`, free via `GITHUB_TOKEN`) was retired by GitHub on July 30, 2026 and caused every CI run to fail. Now uses the **Google Gemini free tier** (`GEMINI_API_KEY` secret, primary) with **Cloudflare Workers AI** (`CF_ACCOUNT_ID` + `CF_AI_TOKEN` secrets, fallback) to automatically translate updated YAML/Markdown files from `defaultLocale` (`hu`) to `en` and `de`, tracking changes via `_translationMeta.sourceHash` and respecting `manualOverride: true`. Provider failures are non-fatal: without any AI key the workflow logs an info notice and the build/deploy proceeds normally.
 
+    - **Demo Site Notice (`src/components/layout/DemoNotice.astro`, 2026-11-20):**
+      - While `security.demoMode: true` in `config/site.yaml`, every locale page renders a dismissible "This is a demo website" dialog (once per browser session, `sessionStorage`) with localized `demoNotice.*` strings from `content/i18n/{hu,en,de}.yaml`.
+      - The sample address is now unmistakably fictitious: `0000 Példaváros, Példa utca 42.` with null-island coordinates. Replace it (and set `demoMode: false`) when deploying for a real institution.
+      - Vault demo phone numbers (`+36 30 456 7890`) and `.example.hu` e-mail addresses were already clearly non-real.
+
 ---
 
 ## 2. Environment & Quirks to Know

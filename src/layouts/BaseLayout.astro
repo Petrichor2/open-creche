@@ -1,5 +1,6 @@
 ---
 import '../styles/base.css';
+import DemoNotice from '../components/layout/DemoNotice.astro';
 import type { SiteConfig } from '../utils/content';
 
 interface Props {
@@ -17,6 +18,7 @@ const colors = siteConfig.theme?.colors || {};
 // Deployment base path ("https://user.github.io/repo" -> "/repo/", custom domains -> "/")
 const rawBase = import.meta.env.BASE_URL;
 const baseUrl = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+const showDemoNotice = siteConfig.security?.demoMode === true;
 ---
 
 <!doctype html>
@@ -111,5 +113,13 @@ const baseUrl = rawBase.endsWith('/') ? rawBase : rawBase + '/';
         </div>
       </div>
     </footer>
+
+    {showDemoNotice && (
+      <DemoNotice
+        title={ui.demoNotice?.title}
+        body={ui.demoNotice?.body}
+        accept={ui.demoNotice?.accept}
+      />
+    )}
   </body>
 </html>

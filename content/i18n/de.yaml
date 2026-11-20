@@ -71,3 +71,8 @@ footer:
   rights: "Alle Rechte vorbehalten."
   privacyNote: "Geschützt durch Cloudflare Turnstile und AES-256-GCM-Verschlüsselung zum Schutz von Kindern und Mitarbeitern."
   adminLink: "Verwaltung (CMS)"
+
+demoNotice:
+  title: "Dies ist eine Demo-Website"
+  body: "Diese Website ist die öffentliche Beispielinstallation der Open-Source-Vorlage OpenCreche und nicht die Website einer echten Krippe oder eines echten Kindergartens. Alle angezeigten Namen, Telefonnummern, Adressen und Fotos sind ausschließlich illustrative Beispieldaten."
+  accept: "Verstanden, weiter"

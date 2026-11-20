@@ -32,17 +32,20 @@ site:
     de: "Eine liebevolle, sichere Umgebung für die Kleinsten"
 
   # Public (non-sensitive) location info for SEO & map display
+  # The shipped template intentionally uses clearly fictitious DEMO values
+  # (nonexistent postal code, placeholder city/street, null-island coordinates)
+  # so the sample deployment can never be mistaken for a real institution.
   location:
     country: "Hungary"
-    postalCode: "1024"
-    city: "Budapest"
+    postalCode: "0000"
+    city: "Példaváros"
     address:
-      hu: "Kis Rókus utca 12."
-      en: "12 Kis Rókus Street"
-      de: "Kis Rókus Straße 12"
+      hu: "Példa utca 42."
+      en: "42 Example Street"
+      de: "Beispielstraße 42"
     coordinates:
-      lat: 47.5105
-      lng: 19.0265
+      lat: 0
+      lng: 0
     openingHours:
       hu: "Hétfő – Péntek: 07:00 – 17:00"
       en: "Monday – Friday: 07:00 – 17:00"
@@ -104,6 +107,10 @@ security:
   turnstileSiteKey: "0x4AAAAAAABkMYinukE_example"
   # Cloudflare Worker base URL for Turnstile verification, vault key release & contact form
   workerBaseUrl: "https://api.napsugar-ovi.example.hu"
+  # Demo mode: while true, the site unlocks the sample encrypted vault with a
+  # public demo key (no Cloudflare Worker needed) and shows a dismissible
+  # "This is a demo website" notice on first visit. Set to false in production.
+  demoMode: true
   # What requires Turnstile human verification before unlocking?
   protect:
     contactDetails: true   # Phone numbers, direct email addresses

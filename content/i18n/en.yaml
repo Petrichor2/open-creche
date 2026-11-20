@@ -71,3 +71,8 @@ footer:
   rights: "All rights reserved."
   privacyNote: "Protected by Cloudflare Turnstile and client-side AES-256-GCM encryption to safeguard children and staff."
   adminLink: "Staff Admin (CMS)"
+
+demoNotice:
+  title: "This is a demo website"
+  body: "This site is the public sample deployment of the open-source OpenCreche template, not the website of a real nursery or kindergarten. All names, phone numbers, addresses, and photos shown are illustrative sample data only."
+  accept: "Understood, continue"
