@@ -3,7 +3,7 @@
 > **Last Updated:** 2026-11-20
 > **Current Branch:** `main`
 > **Build Status:** ✅ Passing (`4 page(s) built in ~1.75s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
-> **CI Status:** ✅ Fixed — the `Run Free AI Auto-Translation` step no longer fails (GitHub Models API was retired on 2026-07-30; see `docs/TASKS.md`). To enable live auto-translation in CI, add the `GEMINI_API_KEY` repository secret (free Google AI Studio key); without it, translation is skipped gracefully and the site still builds and deploys.
+> **CI Status:** ✅ Passing — the workflow now runs entirely on **Bun** (`oven-sh/setup-bun@v2`, `bun install`, `bun run i18n:translate` / `vault:demo` / `build`); `actions/setup-node` and npm were removed. To enable live auto-translation in CI, add the `GEMINI_API_KEY` repository secret (free Google AI Studio key); without it, translation is skipped gracefully and the site still builds and deploys.
 
 ---
 
@@ -30,7 +30,7 @@
 ## 2. Environment & Quirks to Know
 
 - **Runtime:** System Node.js is not in default `/usr/bin`, use **Bun** located at `/home/server/.bun/bin/bun` (`export PATH="$HOME/.bun/bin:$PATH"`).
-- **Filesystem:** The repository is on `/media/server/6AEF-FABB/repo/open-creche` (an exFAT/FAT mount), which does not support POSIX symlinks in `node_modules/.bin`. Therefore, `package.json` invokes `./node_modules/astro/astro.js` directly instead of relying on `.bin/astro` symlinks. Keep this pattern when adding new CLI scripts to `package.json`.
+- **Filesystem:** The repository is on `/media/server/6AEF-FABB/repo/open-creche` (an exFAT/FAT mount), which does not support POSIX symlinks in `node_modules/.bin`. Therefore, `package.json` scripts invoke `bun ./node_modules/astro/astro.js` (and other CLIs) directly instead of relying on `.bin/astro` symlinks. Keep this pattern when adding new CLI scripts to `package.json`.
 
 ---
 

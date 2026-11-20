@@ -27,4 +27,4 @@ fs.mkdirSync(path.join(rawDir, 'media', 'staff'), { recursive: true });
 fs.mkdirSync(path.join(rawDir, 'media', 'gallery'), { recursive: true });
 
 console.log('✅ Initialized .vault-raw/ directory structure (gitignored).');
-console.log('👉 Run `npm run vault:demo` or `npm run vault:encrypt` to build encrypted vault files.');
+console.log('👉 Run `bun run vault:demo` or `bun run vault:encrypt` to build encrypted vault files.');

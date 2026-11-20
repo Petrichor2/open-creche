@@ -5,15 +5,15 @@
   "type": "module",
   "description": "Privacy-first, multilingual, config-driven website template for nurseries, creches, and kindergartens",
   "scripts": {
-    "dev": "node ./node_modules/astro/astro.js dev",
-    "start": "node ./node_modules/astro/astro.js dev",
-    "build": "node ./node_modules/astro/astro.js build",
-    "preview": "node ./node_modules/astro/astro.js preview",
-    "vault:init": "node scripts/generate-keys.mjs",
-    "vault:encrypt": "node scripts/vault-cli.mjs encrypt",
-    "vault:decrypt": "node scripts/vault-cli.mjs decrypt",
-    "vault:demo": "node scripts/vault-cli.mjs demo",
-    "i18n:translate": "node scripts/auto-translate.mjs"
+    "dev": "bun ./node_modules/astro/astro.js dev",
+    "start": "bun ./node_modules/astro/astro.js dev",
+    "build": "bun ./node_modules/astro/astro.js build",
+    "preview": "bun ./node_modules/astro/astro.js preview",
+    "vault:init": "bun scripts/generate-keys.mjs",
+    "vault:encrypt": "bun scripts/vault-cli.mjs encrypt",
+    "vault:decrypt": "bun scripts/vault-cli.mjs decrypt",
+    "vault:demo": "bun scripts/vault-cli.mjs demo",
+    "i18n:translate": "bun scripts/auto-translate.mjs"
   },
   "dependencies": {
     "astro": "^5.4.0",

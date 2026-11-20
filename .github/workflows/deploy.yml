@@ -24,13 +24,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
+          bun-version: latest
 
       - name: Install dependencies
-        run: npm install --no-package-lock
+        run: bun install
 
       - name: Run Free AI Auto-Translation (Gemini + Cloudflare fallback)
         # Non-fatal: translations are optional; the build proceeds even if no AI provider is configured.
@@ -38,7 +38,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_AI_TOKEN: ${{ secrets.CF_AI_TOKEN }}
-        run: npm run i18n:translate
+        run: bun run i18n:translate
 
       - name: Commit and push auto-translated files if changed
         run: |
@@ -55,14 +55,14 @@ jobs:
       - name: Ensure encrypted Privacy Vault exists
         run: |
           if [ ! -f "public/vault/contact.enc.json" ]; then
-            npm run vault:demo
+            bun run vault:demo
           fi
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Build static Astro site
-        run: npm run build
+        run: bun run build
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3

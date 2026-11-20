@@ -10,7 +10,7 @@ This guide walks through setting up an **OpenCreche** website for a nursery or k
 2. A free **[Cloudflare](https://www.cloudflare.com/)** account.
 3. A custom domain name (e.g., `napsugar-ovi.hu` or `sunshine-creche.org`) added to Cloudflare DNS.
 4. A free **[Resend](https://resend.com/)** account (for sending contact form emails).
-5. **Node.js 20+** installed locally (for initial setup and key generation).
+5. **[Bun](https://bun.sh)** installed locally (for initial setup, key generation, and running all `package.json` scripts).
 
 ---
 
@@ -21,7 +21,7 @@ This guide walks through setting up an **OpenCreche** website for a nursery or k
    ```bash
    git clone https://github.com/<your-org>/<your-repo>.git
    cd <your-repo>
-   npm install
+   bun install
    ```
 
 ---
@@ -31,7 +31,7 @@ This guide walks through setting up an **OpenCreche** website for a nursery or k
 Generate a unique 256-bit AES encryption key for your institution:
 
 ```bash
-npm run vault:init
+bun run vault:init
 ```
 
 This command:
@@ -112,7 +112,7 @@ The Cloudflare Worker validates Turnstile tokens, releases the AES decryption ke
    - `.vault-raw/gallery.yaml` + `.vault-raw/media/gallery/**/*.jpg`
 2. Run the encryption CLI:
    ```bash
-   npm run vault:encrypt
+   bun run vault:encrypt
    ```
    This strips EXIF GPS data, converts photos to optimized WebP, encrypts everything with `VAULT_MASTER_KEY`, and outputs:
    - `content/vault/contact.enc.json`
