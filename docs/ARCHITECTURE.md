@@ -71,7 +71,7 @@ open-creche/
 │       ├── index.html
 │       └── config.yml
 ├── scripts/
-│   ├── auto-translate.mjs          # Free AI translator via GitHub Models + fallback
+│   ├── auto-translate.mjs          # Free AI translator via Gemini + Cloudflare fallback
 │   ├── vault-cli.mjs               # CLI tool to encrypt/decrypt local files in `.vault-raw/`
 │   └── generate-keys.mjs           # Helper to generate AES-256 master key
 ├── src/
@@ -124,10 +124,11 @@ OpenCreche supports multiple languages (`en`, `hu`, `de` by default) using Astro
 ### Automated AI Translation Pipeline (GitHub Actions)
 To prevent nursery staff from having to manually translate every announcement or schedule update into multiple languages, OpenCreche includes `scripts/auto-translate.mjs` executed automatically in GitHub Actions:
 
-1. **Zero-Key Default Provider (GitHub Models):**
-   - Uses GitHub's built-in **GitHub Models inference endpoint** (`https://models.inference.ai.azure.com`) authenticated via the workflow's native `GITHUB_TOKEN` (`permissions: models: read, contents: write`).
-   - Requires zero external API keys or paid subscriptions.
-   - Supports optional fallback providers (**Cloudflare Workers AI** or **Google Gemini Free Tier**) if configured via repository secrets.
+1. **Primary Provider (Google Gemini Free Tier):**
+   - Uses Google's **Gemini API** (`https://generativelanguage.googleapis.com`) with the `GEMINI_API_KEY` repository secret (the free API tier is sufficient).
+   - Supports an optional fallback provider (**Cloudflare Workers AI**) configured via the `CF_ACCOUNT_ID` and `CF_AI_TOKEN` repository secrets.
+   - If no provider key is configured, the script logs an informational notice and exits successfully so CI builds never fail just because translations are unavailable.
+   - *Historical note:* The former zero-key GitHub Models provider (`models.inference.ai.azure.com`) was fully retired by GitHub on July 30, 2026 and is no longer supported.
 2. **Smart Change Detection (`_translationMeta`):**
    - When an editor creates or updates a file in the `defaultLocale` (e.g., `content/news/hu/2026-tavaszi-nyilt-nap.md`), `scripts/auto-translate.mjs` computes a SHA-256 hash of the source content (`sourceHash`).
    - For each target locale configured in `config/site.yaml` (e.g., `en`, `de`), it checks if the corresponding file exists and whether its `_translationMeta.sourceHash` matches the current source file.
@@ -142,7 +143,7 @@ flowchart LR
     Push --> GHA["⚙️ GitHub Action<br/>scripts/auto-translate.mjs"]
     GHA --> Check{"Is target (en, de)<br/>missing or outdated?"}
     Check -->|"No / manualOverride: true"| Build["🚀 Astro Build & Deploy"]
-    Check -->|"Yes"| LLM["🤖 GitHub Models API<br/>(Free via GITHUB_TOKEN)"]
+    Check -->|"Yes"| LLM["🤖 Gemini API<br/>(Free tier via GEMINI_API_KEY)"]
     LLM --> Commit["💾 Commit translated files<br/>with _translationMeta"]
     Commit --> Build
 ```

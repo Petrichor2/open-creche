@@ -6,12 +6,18 @@
  * into all target locales configured in `config/site.yaml` (e.g., "en", "de").
  *
  * Primary Free Engine:
- *   - GitHub Models API (`https://models.inference.ai.azure.com/chat/completions`)
- *     Authenticated automatically in GitHub Actions via `GITHUB_TOKEN` (`permissions: models: read`).
+ *   - Google Gemini Free Tier (`GEMINI_API_KEY` secret)
  *
- * Fallback Engines:
- *   - Google Gemini Free Tier (`GEMINI_API_KEY`)
- *   - Cloudflare Workers AI (`CF_ACCOUNT_ID` + `CF_AI_TOKEN`)
+ * Fallback Engine:
+ *   - Cloudflare Workers AI (`CF_ACCOUNT_ID` + `CF_AI_TOKEN` secrets)
+ *
+ * NOTE: The former GitHub Models inference API (`models.inference.ai.azure.com`,
+ * later `models.github.ai`) was fully retired by GitHub on July 30, 2026, and is
+ * therefore no longer supported as a provider.
+ *
+ * If no provider credentials are configured, the script logs an informational
+ * message and exits successfully (exit code 0) so that CI builds never fail
+ * solely because translations are unavailable.
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -32,84 +38,67 @@ function computeHash(text) {
 }
 
 /**
- * Calls the configured free LLM provider (GitHub Models -> Gemini -> Cloudflare AI)
+ * Calls the configured free LLM provider (Gemini -> Cloudflare Workers AI).
+ * Network or API errors are caught per provider and logged as warnings so a
+ * single unreachable provider never crashes the translation run.
  */
 async function callTranslationModel(systemPrompt, userContent) {
-  const model = autoTranslateConfig.model || 'gpt-4o-mini';
-
-  // 1. GitHub Models API (Default, free with built-in GITHUB_TOKEN)
-  if (process.env.GITHUB_TOKEN) {
-    const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.2,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent },
-        ],
-      }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return {
-        text: data.choices?.[0]?.message?.content?.trim() || '',
-        provider: `github-models/${model}`,
-      };
-    }
-    console.warn(`⚠️ GitHub Models returned ${response.status}. Trying fallback provider if available...`);
-  }
-
-  // 2. Fallback: Google Gemini Free Tier API
+  // 1. Primary: Google Gemini Free Tier API
   if (process.env.GEMINI_API_KEY) {
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-    const response = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ role: 'user', parts: [{ text: userContent }] }],
-        generationConfig: { temperature: 0.2 },
-      }),
-    });
+    const model = autoTranslateConfig.model || 'gemini-2.5-flash';
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    try {
+      const response = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: 'user', parts: [{ text: userContent }] }],
+          generationConfig: { temperature: 0.2 },
+        }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      return {
-        text: data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '',
-        provider: 'gemini/gemini-2.0-flash',
-      };
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          text: data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '',
+          provider: `gemini/${model}`,
+        };
+      }
+      console.warn(`⚠️ Gemini returned ${response.status}. Trying fallback provider if available...`);
+    } catch (err) {
+      console.warn(`⚠️ Gemini request failed (${err.message}). Trying fallback provider if available...`);
     }
   }
 
-  // 3. Fallback: Cloudflare Workers AI
+  // 2. Fallback: Cloudflare Workers AI
   if (process.env.CF_ACCOUNT_ID && process.env.CF_AI_TOKEN) {
     const cfUrl = `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-8b-instruct`;
-    const response = await fetch(cfUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.CF_AI_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent },
-        ],
-      }),
-    });
+    try {
+      const response = await fetch(cfUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.CF_AI_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userContent },
+          ],
+        }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      return {
-        text: data.result?.response?.trim() || '',
-        provider: 'cloudflare-ai/llama-3.1-8b',
-      };
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          text: data.result?.response?.trim() || '',
+          provider: 'cloudflare-ai/llama-3.1-8b',
+        };
+      }
+      console.warn(`⚠️ Cloudflare Workers AI returned ${response.status}.`);
+    } catch (err) {
+      console.warn(`⚠️ Cloudflare Workers AI request failed (${err.message}).`);
     }
   }
 
@@ -169,13 +158,13 @@ async function processCollectionFolder(collectionName) {
           // Up to date
           continue;
         }
-        // If target file already exists in template without _translationMeta, stamp it if no API token is set
-        if (!existingMeta && !process.env.GITHUB_TOKEN && !process.env.GEMINI_API_KEY) {
+        // If target file already exists in template without _translationMeta, stamp it if no AI token is set
+        if (!existingMeta && !process.env.GEMINI_API_KEY && !process.env.CF_AI_TOKEN) {
           continue;
         }
       }
 
-      if (!process.env.GITHUB_TOKEN && !process.env.GEMINI_API_KEY && !process.env.CF_AI_TOKEN) {
+      if (!process.env.GEMINI_API_KEY && !process.env.CF_AI_TOKEN) {
         console.log(
           `ℹ️  No AI token in environment to translate ${collectionName}/${defaultLocale}/${file} -> ${targetLocale}.`
         );

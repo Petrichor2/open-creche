@@ -10,7 +10,6 @@ permissions:
   contents: write
   pages: write
   id-token: write
-  models: read
 
 concurrency:
   group: "pages"
@@ -33,9 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm install --no-package-lock
 
-      - name: Run Free AI Auto-Translation (GitHub Models + Fallback)
+      - name: Run Free AI Auto-Translation (Gemini + Cloudflare fallback)
+        # Non-fatal: translations are optional; the build proceeds even if no AI provider is configured.
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_AI_TOKEN: ${{ secrets.CF_AI_TOKEN }}

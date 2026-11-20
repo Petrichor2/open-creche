@@ -15,8 +15,8 @@ This document tracks completed milestones, active tasks, and future enhancements
   - [x] `docs/SECURITY_AND_PRIVACY.md`
   - [x] `docs/DEPLOYMENT.md`
   - [x] `docs/CMS_GUIDE.md`
-- [x] Specify free automated AI translation pipeline in GitHub Actions (`GitHub Models` via `GITHUB_TOKEN` + fallbacks).
-
+- [x] Specify free automated AI translation pipeline in GitHub Actions (initially `GitHub Models` via `GITHUB_TOKEN` + fallbacks).
+- [x] **Fix CI auto-translation failure (2026-11-20):** GitHub retired the GitHub Models inference API on July 30, 2026, which broke the `Run Free AI Auto-Translation` step (`getaddrinfo ENOTFOUND models.inference.ai.azure.com`). Migrated `scripts/auto-translate.mjs` to the free **Google Gemini** tier as primary provider (Cloudflare Workers AI fallback), made provider failures non-fatal (build proceeds without translations), removed `models: read` from `.github/workflows/deploy.yml`, and updated all docs.
 ---
 
 ## Phase 2: Core Scaffolding & MVP Implementation ✅ (Completed)

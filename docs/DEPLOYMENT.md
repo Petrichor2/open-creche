@@ -143,7 +143,9 @@ The Cloudflare Worker validates Turnstile tokens, releases the AES decryption ke
 
 ## Step 8: Enable GitHub Actions Permissions for Auto-Translation
 
-OpenCreche's `.github/workflows/deploy.yml` uses **GitHub Models** (via the built-in `GITHUB_TOKEN`) to automatically translate your primary language content (`hu`) into target languages (`en`, `de`) and commit the translated files back to the repository before building the site.
+OpenCreche's `.github/workflows/deploy.yml` uses the **Google Gemini API** (free tier, via the `GEMINI_API_KEY` secret) to automatically translate your primary language content (`hu`) into target languages (`en`, `de`) and commit the translated files back to the repository before building the site. If no AI key is configured, translation is skipped gracefully and the build still succeeds.
+
+> **Note:** The former GitHub Models provider (free via the built-in `GITHUB_TOKEN`) was retired by GitHub on July 30, 2026 and has been removed.
 
 1. In your GitHub repository, go to **Settings** -> **Actions** -> **General**.
 2. Scroll down to **Workflow permissions** and select **"Read and write permissions"**, then click **Save**.
@@ -153,6 +155,6 @@ OpenCreche's `.github/workflows/deploy.yml` uses **GitHub Models** (via the buil
      contents: write   # To commit translated YAML/Markdown files back to the repo
      pages: write      # To deploy to GitHub Pages
      id-token: write   # For GitHub Pages deployment attestation
-     models: read      # To call GitHub Models API for free using GITHUB_TOKEN
    ```
-4. *(Optional Fallback)* If you want to configure a secondary fallback AI provider in case GitHub Models rate limits are reached, you can add `GEMINI_API_KEY` or `CF_AI_TOKEN` under **Settings** -> **Secrets and variables** -> **Actions**.
+4. Add your free **Gemini API key** under **Settings** -> **Secrets and variables** -> **Actions** as `GEMINI_API_KEY` (get one at [Google AI Studio](https://aistudio.google.com/)). This enables automated translation.
+5. *(Optional Fallback)* As a secondary provider in case Gemini is unavailable, you can add `CF_ACCOUNT_ID` and `CF_AI_TOKEN` (Cloudflare Workers AI) under the same Secrets settings.

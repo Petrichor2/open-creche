@@ -49,8 +49,11 @@ i18n:
   fallbackToDefault: true
   autoTranslate:
     enabled: true
-    provider: "github-models"
-    model: "gpt-4o-mini"
+    # Primary provider: "gemini" (free tier, GEMINI_API_KEY secret required)
+    # Fallback provider: "cloudflare-ai" (CF_ACCOUNT_ID + CF_AI_TOKEN secrets)
+    # NOTE: "github-models" was retired by GitHub on July 30, 2026 and is no longer available.
+    provider: "gemini"
+    model: "gemini-2.5-flash"
     tone: "Warm, welcoming, natural early-childhood education terminology"
     collections:
       - "pages"
