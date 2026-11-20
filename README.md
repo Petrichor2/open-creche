@@ -15,7 +15,7 @@ It enables child-care institutions to launch a warm, human-crafted, custom-domai
 - **Built-in Contact Form (Zero Email Exposure):** Parents can message the institution directly through a Turnstile-protected contact form powered by a Cloudflare Worker and **Resend API / Cloudflare Email Routing**, keeping recipient email addresses completely hidden.
 - **Multilingual Out of the Box (`en`, `hu`, `de`) + Free AI Auto-Translation:**
   - Built-in internationalization with English, Hungarian, and German pre-configured, extensible to any language via `config/site.yaml`.
-  - **Zero-Config GitHub Actions Auto-Translation:** Write content once in your primary language (e.g., Hungarian); a GitHub Action automatically translates new or updated YAML/Markdown files into all configured target languages using **GitHub Models (`GITHUB_TOKEN`)** for free (with optional Cloudflare Workers AI / Gemini fallback) and commits the translations back to the repository.
+  - **Zero-Config GitHub Actions Auto-Translation:** Write content once in your primary language (e.g., Hungarian); a GitHub Action automatically translates new or updated YAML/Markdown files into all configured target languages using the free **Google Gemini** API tier (with optional Cloudflare Workers AI fallback) and commits the translations back to the repository. If no AI key is configured, the build still succeeds — translation is skipped gracefully.
 - **Warm, Crafted Design (No "AI-Slop"):** Built with **Astro** and pure **Vanilla CSS** (custom properties, organic shapes, warm color palettes, friendly typography). No generic SaaS templates, no bloated Tailwind/shadcn clichés.
 - **Config-Driven & Visual Admin UI:**
   - Everything is controlled through clean YAML and Markdown files.
@@ -49,7 +49,7 @@ flowchart TB
     end
 
     Resend["📨 Resend Email API"]
-    GHRepo["📦 GitHub Repository<br/>(Sveltia CMS + GitHub Models Auto-Translate)"]
+    GHRepo["📦 GitHub Repository<br/>(Sveltia CMS + Gemini Auto-Translate)"]
 
     Visitor -->|"1. Fetches static HTML, CSS & .enc blobs"| GHPages
     Visitor -->|"2. Solves human challenge"| Turnstile

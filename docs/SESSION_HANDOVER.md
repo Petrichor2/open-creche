@@ -1,8 +1,9 @@
 # Session Handover (`docs/SESSION_HANDOVER.md`)
 
-> **Last Updated:** 2026-11-08
+> **Last Updated:** 2026-11-20
 > **Current Branch:** `main`
 > **Build Status:** ✅ Passing (`4 page(s) built in ~1.75s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
+> **CI Status:** ✅ Fixed — the `Run Free AI Auto-Translation` step no longer fails (GitHub Models API was retired on 2026-07-30; see `docs/TASKS.md`). To enable live auto-translation in CI, add the `GEMINI_API_KEY` repository secret (free Google AI Studio key); without it, translation is skipped gracefully and the site still builds and deploys.
 
 ---
 
@@ -22,7 +23,7 @@
      - `POST /api/contact/send`: Verifies Turnstile token and sends contact emails via Resend API without exposing recipient emails.
      - `GET /api/oauth/auth` & `/api/oauth/callback`: GitHub OAuth provider for Sveltia CMS.
    - **Free AI Auto-Translation (`scripts/auto-translate.mjs` & `.github/workflows/deploy.yml`):**
-     - Uses GitHub Models (`GITHUB_TOKEN` with `permissions: models: read`) to automatically translate updated YAML/Markdown files from `defaultLocale` (`hu`) to `en` and `de`, tracking changes via `_translationMeta.sourceHash` and respecting `manualOverride: true`.
+     - **Fixed on 2026-11-20:** the original GitHub Models provider (`models.inference.ai.azure.com`, free via `GITHUB_TOKEN`) was retired by GitHub on July 30, 2026 and caused every CI run to fail. Now uses the **Google Gemini free tier** (`GEMINI_API_KEY` secret, primary) with **Cloudflare Workers AI** (`CF_ACCOUNT_ID` + `CF_AI_TOKEN` secrets, fallback) to automatically translate updated YAML/Markdown files from `defaultLocale` (`hu`) to `en` and `de`, tracking changes via `_translationMeta.sourceHash` and respecting `manualOverride: true`. Provider failures are non-fatal: without any AI key the workflow logs an info notice and the build/deploy proceeds normally.
 
 ---
 

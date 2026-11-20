@@ -11,7 +11,7 @@ This file provides essential architectural context, coding conventions, and oper
 - **Hosting:** GitHub Pages (from a **Public** GitHub repository) + Cloudflare DNS.
 - **Anti-Scrape & Privacy Vault:** Sensitive data (phone numbers, email addresses, staff bios/photos, and children's gallery photos) is encrypted at rest in Git using **AES-256-GCM** (`public/vault/*.enc.json` and `public/vault-media/**/*.enc`). It is unlocked in the browser via `window.crypto.subtle` only after passing a **Cloudflare Turnstile** challenge verified by a **Cloudflare Worker** (`worker/`).
 - **Zero-Email Contact Form:** Messages are sent via the Cloudflare Worker using the **Resend API** so staff email addresses are never exposed.
-- **Multilingual + Free AI Auto-Translation:** Built-in `hu`, `en`, `de` support. GitHub Actions automatically translates content from `defaultLocale` using **GitHub Models (`GITHUB_TOKEN`)** (`scripts/auto-translate.mjs`) and commits translations back to the repository.
+- **Multilingual + Free AI Auto-Translation:** Built-in `hu`, `en`, `de` support. GitHub Actions automatically translates content from `defaultLocale` using the **free Google Gemini API tier** (`GEMINI_API_KEY` secret, with Cloudflare Workers AI fallback) (`scripts/auto-translate.mjs`) and commits translations back to the repository.
 - **Visual Admin UI:** **Sveltia CMS** (Decap CMS compatible) located at `public/admin/`.
 
 ---
@@ -76,7 +76,7 @@ bun ./node_modules/astro/astro.js dev
 - `content/groups/{lang}/*.yaml` — Creche and kindergarten room/group definitions.
 - `content/news/{lang}/*.md` — Announcements and event calendar items.
 - `scripts/vault-cli.mjs` — AES-256-GCM encryption/decryption CLI for contact details, staff, and gallery blobs.
-- `scripts/auto-translate.mjs` — GitHub Models / Gemini / Cloudflare AI automated translation script.
+- `scripts/auto-translate.mjs` — Gemini / Cloudflare AI automated translation script.
 - `src/components/vault/PrivacyVaultRuntime.astro` — Client-side WebCrypto AES-256-GCM decryptor and Turnstile controller.
 - `worker/src/index.ts` — Cloudflare Worker (Turnstile `siteverify`, vault key release, Resend email relay, GitHub OAuth for CMS).
 - `docs/TASKS.md` — Project backlog and milestone tracking.

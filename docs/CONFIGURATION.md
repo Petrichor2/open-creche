@@ -59,10 +59,11 @@ i18n:
   fallbackToDefault: true
   autoTranslate:
     enabled: true
-    # Primary provider: "github-models" (uses built-in GITHUB_TOKEN for free)
-    # Fallback providers: "cloudflare-ai" | "gemini"
-    provider: "github-models"
-    model: "gpt-4o-mini"
+    # Primary provider: "gemini" (free tier, requires GEMINI_API_KEY secret)
+    # Fallback provider: "cloudflare-ai" (requires CF_ACCOUNT_ID + CF_AI_TOKEN secrets)
+    # NOTE: "github-models" was retired by GitHub on July 30, 2026 and is no longer available.
+    provider: "gemini"
+    model: "gemini-2.5-flash"
     tone: "Warm, welcoming, natural early-childhood education terminology"
     collections:
       - "pages"
@@ -231,7 +232,7 @@ _translationMeta:
   sourceLocale: "hu"
   sourceHash: "e3b0c44298fc1c14"
   translatedAt: "2026-04-10T08:15:00Z"
-  provider: "github-models/gpt-4o-mini"
+  provider: "gemini/gemini-2.5-flash"
   manualOverride: false # Set to true to lock this file from being overwritten by auto-translate
 ---
 

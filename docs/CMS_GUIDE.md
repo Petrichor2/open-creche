@@ -26,7 +26,7 @@ OpenCreche combines **automatic AI translation** with **manual editorial control
 
 ### Automatic Translation (Default Workflow)
 1. An editor writes a new announcement or updates the daily schedule in the **default language** (e.g., Hungarian `hu`) and clicks **Save**.
-2. When the commit lands on GitHub, the GitHub Actions workflow runs `scripts/auto-translate.mjs` using **GitHub Models** (free via the built-in `GITHUB_TOKEN`).
+2. When the commit lands on GitHub, the GitHub Actions workflow runs `scripts/auto-translate.mjs` using the **Google Gemini** free API tier (via the `GEMINI_API_KEY` repository secret, with optional Cloudflare Workers AI fallback).
 3. The action translates the new or modified content into all other active languages (`en`, `de`) configured in `config/site.yaml`, commits the translated files back to the repository, and deploys the updated site.
 
 ### Manual Review & Locking Translations
