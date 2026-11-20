@@ -91,7 +91,7 @@ All project documentation is written in English and located in the [`docs/`](doc
 1. **Fork or Use Template:** Create a new public GitHub repository from `open-creche`.
 2. **Configure Site:** Edit `config/site.yaml` to set your institution's name, active languages (`hu`, `en`, `de`), theme palette, and active sections.
 3. **Deploy Cloudflare Worker:** Deploy the included `worker/` script to your free Cloudflare account and set your `VAULT_MASTER_KEY`, `TURNSTILE_SECRET_KEY`, and `RESEND_API_KEY`.
-4. **Encrypt Sensitive Data:** Run `npm run vault:encrypt` (or upload via the Admin UI) to encrypt phone numbers, staff profiles, and gallery photos into `.enc` files before committing.
+4. **Encrypt Sensitive Data:** Run `bun run vault:encrypt` (or upload via the Admin UI) to encrypt phone numbers, staff profiles, and gallery photos into `.enc` files before committing.
 5. **Enable GitHub Pages:** Push to `main`—GitHub Actions automatically builds the Astro site and deploys it to GitHub Pages behind your custom Cloudflare domain.
 
 ---

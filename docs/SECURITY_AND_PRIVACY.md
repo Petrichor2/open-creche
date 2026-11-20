@@ -21,8 +21,8 @@ This document explains how **OpenCreche** resolves this paradox using a **Zero-P
 
 ## 2. Cryptographic Specification
 
-- **Algorithm:** `AES-256-GCM` (Authenticated Encryption with Associated Data, natively supported by Node.js `crypto` and Browser `window.crypto.subtle`).
-- **Master Key (`VAULT_MASTER_KEY`):** A 256-bit (32-byte, 64-character hex or Base64) secret generated once per institution (`npm run vault:init`).
+- **Algorithm:** `AES-256-GCM` (Authenticated Encryption with Associated Data, natively supported by the `node:crypto` API in Bun and Node.js, and by Browser `window.crypto.subtle`).
+- **Master Key (`VAULT_MASTER_KEY`):** A 256-bit (32-byte, 64-character hex or Base64) secret generated once per institution (`bun run vault:init`).
   - Stored locally in `.env` (gitignored) for CLI encryption.
   - Stored as an encrypted Cloudflare Worker Secret (`wrangler secret put VAULT_MASTER_KEY`).
 - **Initialization Vector (IV):** A fresh 96-bit (12-byte) cryptographically random IV is generated for every single encrypted file or JSON payload.

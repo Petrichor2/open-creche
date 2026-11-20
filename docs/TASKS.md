@@ -17,6 +17,7 @@ This document tracks completed milestones, active tasks, and future enhancements
   - [x] `docs/CMS_GUIDE.md`
 - [x] Specify free automated AI translation pipeline in GitHub Actions (initially `GitHub Models` via `GITHUB_TOKEN` + fallbacks).
 - [x] **Fix CI auto-translation failure (2026-11-20):** GitHub retired the GitHub Models inference API on July 30, 2026, which broke the `Run Free AI Auto-Translation` step (`getaddrinfo ENOTFOUND models.inference.ai.azure.com`). Migrated `scripts/auto-translate.mjs` to the free **Google Gemini** tier as primary provider (Cloudflare Workers AI fallback), made provider failures non-fatal (build proceeds without translations), removed `models: read` from `.github/workflows/deploy.yml`, and updated all docs.
+- [x] **Migrate build pipeline to Bun (2026-11-20):** All `package.json` scripts now invoke `bun` directly (build, dev, vault CLI, auto-translate), and `.github/workflows/deploy.yml` uses `oven-sh/setup-bun@v2` with `bun install` / `bun run` instead of `actions/setup-node` + npm. Enabled GitHub Pages (`build_type: workflow`) on the repository.
 ---
 
 ## Phase 2: Core Scaffolding & MVP Implementation ✅ (Completed)

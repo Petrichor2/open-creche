@@ -51,13 +51,13 @@ Inside `/admin/`, the **Privacy Vault** tab embeds a custom client-side encrypti
    - `window.crypto.subtle.encrypt('AES-GCM', ...)` encrypts both the image binary (`.enc`) and the JSON manifest (`.enc.json`).
    - Only the encrypted `.enc` files are committed to the GitHub repository via the GitHub API.
 
-### Workflow B: Local CLI Encryption (`npm run vault:encrypt`)
+### Workflow B: Local CLI Encryption (`bun run vault:encrypt`)
 For maintainers working locally on a computer:
 1. Edit `.vault-raw/contact.yaml`, `.vault-raw/staff.yaml`, or `.vault-raw/gallery.yaml`.
 2. Drop raw photos into `.vault-raw/media/staff/` or `.vault-raw/media/gallery/`.
 3. Run:
    ```bash
-   npm run vault:encrypt
+   bun run vault:encrypt
    ```
 4. Commit the generated `content/vault/*.enc.json` and `public/vault-media/**/*.enc` files.
    *(Note: `.vault-raw/` is in `.gitignore`, so raw photos are never committed.)*
