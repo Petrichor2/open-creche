@@ -5,6 +5,11 @@ site:
   #   - "https://www.my-creche.hu"         -> site is served at the domain root ("/")
   # Update this URL when you attach a custom domain and all links adjust automatically.
   url: "https://petrichor2.github.io/open-creche"
+  # Demo content: shows the dismissible "This is a demo website" notice.
+  # Independent of security.demoMode — keep it true while the institution data
+  # (names, address, photos) is still illustrative sample data, even when the
+  # Privacy Vault already runs on a real Cloudflare Worker + Turnstile.
+  demoContent: true
   type: "combined" # "creche" | "kindergarten" | "combined"
 
   title:

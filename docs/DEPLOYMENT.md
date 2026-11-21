@@ -2,6 +2,11 @@
 
 This guide walks through setting up an **OpenCreche** website for a nursery or kindergarten from scratch using 100% free services: **GitHub Pages**, **Cloudflare DNS**, **Cloudflare Turnstile**, **Cloudflare Workers**, and **Resend**.
 
+> **Fast path:** if you just want to bring up the production Privacy Vault chain
+> (DNS + custom subdomain, Turnstile, Vault unlock Worker) while keeping the
+> sample content, follow [`docs/CLOUDFLARE_SETUP.md`](CLOUDFLARE_SETUP.md)
+> instead — it is a focused, step-by-step quickstart.
+
 ---
 
 ## Prerequisites

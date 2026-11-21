@@ -3,8 +3,9 @@ main = "src/index.ts"
 compatibility_date = "2026-01-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://napsugar-ovi.example.hu"
-FROM_EMAIL = "weboldal@napsugar-ovi.example.hu"
+# Site origin allowed to call this Worker's APIs (CORS). Keep in sync with site.url.
+ALLOWED_ORIGIN = "https://ovi.danielfekete.com"
+FROM_EMAIL = "weboldal@danielfekete.com"
 
 # Secrets to be configured via `npx wrangler secret put <NAME>`:
 # - VAULT_MASTER_KEY
