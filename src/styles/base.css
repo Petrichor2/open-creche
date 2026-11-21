@@ -256,8 +256,19 @@ a {
     grid-row: 3;
     grid-column: 1 / -1;
     justify-self: center;
-    margin-top: 0.4rem;
-    padding-top: 0.75rem;
+    position: relative;
+    margin-top: 1.7rem;
+  }
+
+  /* Craft-style dashed divider above the language pills — drawn OUTSIDE the
+     switcher pill so its internal padding stays symmetric on every side
+     (otherwise the inner pills sit a few pixels below the vertical center). */
+  .site-header.nav-open .lang-switcher::before {
+    content: '';
+    position: absolute;
+    top: -0.85rem;
+    left: -3rem;
+    right: -3rem;
     border-top: 2px dashed var(--color-border);
   }
 
