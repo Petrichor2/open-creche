@@ -75,6 +75,7 @@ contactForm:
   sending: "Küldés folyamatban..."
   success: "Köszönjük! Üzenetét biztonságosan továbbítottuk intézményünk vezetőjének."
   error: "Hiba történt az üzenet küldésekor. Kérjük, próbálja újra."
+  verifyError: "A humán ellenőrzés nem sikerült. Kérjük, próbálja újra."
   privacyNote: "A megadott adatokat kizárólag a megkeresés megválaszolására használjuk — részletek:"
 
 privacy:

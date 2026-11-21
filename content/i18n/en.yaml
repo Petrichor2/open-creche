@@ -75,6 +75,7 @@ contactForm:
   sending: "Sending..."
   success: "Thank you! Your message has been securely delivered to our institution."
   error: "Could not send message. Please try again."
+  verifyError: "Human verification failed. Please try again."
   privacyNote: "The information you provide is used solely to answer your inquiry — details:"
 
 privacy:

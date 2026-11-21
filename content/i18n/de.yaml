@@ -75,6 +75,7 @@ contactForm:
   sending: "Wird gesendet..."
   success: "Vielen Dank! Ihre Nachricht wurde sicher an unsere Einrichtung übermittelt."
   error: "Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut."
+  verifyError: "Die menschliche Verifikation ist fehlgeschlagen. Bitte versuchen Sie es erneut."
   privacyNote: "Die von Ihnen angegebenen Daten werden ausschließlich zur Beantwortung Ihrer Anfrage verwendet — Details:"
 
 privacy:

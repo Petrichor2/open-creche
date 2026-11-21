@@ -110,7 +110,10 @@ The included Cloudflare Worker (`worker/`) exposes three lightweight endpoints:
   }
   ```
 - **Security Checks:**
-  1. Validates `Origin` and `turnstileToken`.
+  1. **Mandatory human verification:** a Turnstile token must be present AND
+     pass Cloudflare's `siteverify` — requests without a valid token (curl,
+     bots) are rejected with `403` **before** the Resend API is ever called.
+     Every relayed email therefore requires a verified human sender.
   2. Sanitizes inputs and validates field lengths.
   3. Sends an email via the **Resend HTTP API** (`https://api.resend.com/emails`) to the secret `CONTACT_RECIPIENT_EMAIL` stored inside the Cloudflare Worker environment (never exposed to the client).
 

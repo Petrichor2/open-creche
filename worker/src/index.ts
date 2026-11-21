@@ -101,15 +101,16 @@ export default {
           message?: string;
         };
 
-        if (body.turnstileToken && env.TURNSTILE_SECRET_KEY) {
-          const ip = request.headers.get('CF-Connecting-IP');
-          const valid = await verifyTurnstileToken(body.turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
-          if (!valid) {
-            return new Response(JSON.stringify({ ok: false, error: 'Turnstile check failed' }), {
-              status: 403,
-              headers: { ...headers, 'Content-Type': 'application/json' },
-            });
-          }
+        // Human verification is MANDATORY for every relayed email (anti-spam):
+        // a valid Turnstile token must be present AND verified server-side.
+        // A request without a token (curl, bots) is rejected before Resend is called.
+        const ip = request.headers.get('CF-Connecting-IP');
+        const isHuman = await verifyTurnstileToken(body.turnstileToken || '', env.TURNSTILE_SECRET_KEY, ip);
+        if (!isHuman) {
+          return new Response(JSON.stringify({ ok: false, error: 'Missing or invalid Turnstile verification' }), {
+            status: 403,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
         }
 
         const parentName = String(body.parentName || '').slice(0, 120);

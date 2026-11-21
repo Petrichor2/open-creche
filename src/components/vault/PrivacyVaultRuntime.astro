@@ -301,42 +301,63 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
     const contactForm = document.getElementById('oc-contact-form');
     if (contactForm) {
       // Turnstile widget for the form, rendered on first interaction (typing) —
-      // never on page load. The token lets the Worker verify a human sender;
-      // if the script cannot load, the message is still accepted without a token.
+      // never on page load. A verified human token is REQUIRED before the
+      // message is relayed; the Worker rejects requests without one.
       let formWidgetId = null;
       let formToken = '';
+      let ensureWidgetPromise = null;
 
-      const ensureFormTurnstile = async function () {
-        if (formWidgetId !== null) return;
-        const slot = contactForm.querySelector('[data-form-turnstile]');
-        if (!slot) return;
-        try {
-          await loadTurnstile();
-        } catch (err) {
-          return; /* graceful degradation: Worker accepts messages without a token */
+      function ensureFormTurnstile() {
+        if (!ensureWidgetPromise) {
+          ensureWidgetPromise = (async function () {
+            const slot = contactForm.querySelector('[data-form-turnstile]');
+            if (!slot) return;
+            try {
+              await loadTurnstile();
+            } catch (err) {
+              return; /* surfaced by waitForFormToken as a verification failure */
+            }
+            if (window.turnstile) {
+              formWidgetId = window.turnstile.render(slot, {
+                sitekey: siteKey,
+                callback: function (token) {
+                  formToken = token;
+                },
+                'expired-callback': function () {
+                  formToken = '';
+                },
+                'error-callback': function () {
+                  formToken = '';
+                },
+              });
+            }
+          })();
         }
-        if (window.turnstile) {
-          formWidgetId = window.turnstile.render(slot, {
-            sitekey: siteKey,
-            callback: function (token) {
-              formToken = token;
-            },
-            'expired-callback': function () {
-              formToken = '';
-            },
-            'error-callback': function () {
-              formToken = '';
-            },
+        return ensureWidgetPromise;
+      }
+
+      // Wait (bounded) for a verified-human token. Returns '' on failure/timeout.
+      async function waitForFormToken(timeoutMs) {
+        await ensureFormTurnstile().catch(function () {});
+        if (formWidgetId === null) return '';
+        const deadline = Date.now() + timeoutMs;
+        while (!formToken && Date.now() < deadline) {
+          await new Promise(function (resolve) {
+            setTimeout(resolve, 200);
           });
         }
-      };
+        return formToken;
+      }
 
-      contactForm.addEventListener('focusin', ensureFormTurnstile, { once: true });
+      contactForm.addEventListener('focusin', function () {
+        ensureFormTurnstile();
+      }, { once: true });
 
       contactForm.addEventListener('submit', async (ev) => {
         ev.preventDefault();
         const submitBtn = contactForm.querySelector('button[type="submit"]');
         const feedbackEl = document.getElementById('oc-contact-feedback');
+        const willRelay = Boolean(workerUrl && !workerUrl.includes('example.hu'));
         if (submitBtn) submitBtn.setAttribute('disabled', 'disabled');
 
         const formData = new FormData(contactForm);
@@ -344,8 +365,29 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
         payload.locale = locale;
         payload.turnstileToken = formToken;
 
+        if (willRelay && !formToken) {
+          // Show progress while the human verification completes.
+          if (feedbackEl) {
+            feedbackEl.textContent = contactForm.dataset.sendingMsg || 'Sending...';
+            feedbackEl.style.color = 'var(--color-text-muted)';
+            feedbackEl.removeAttribute('hidden');
+          }
+
+          const token = await waitForFormToken(15000);
+          if (!token) {
+            if (feedbackEl) {
+              feedbackEl.textContent = contactForm.dataset.verifyErrorMsg || 'Human verification failed.';
+              feedbackEl.style.color = 'var(--color-primary-dark)';
+              feedbackEl.removeAttribute('hidden');
+            }
+            if (submitBtn) submitBtn.removeAttribute('disabled');
+            return;
+          }
+          payload.turnstileToken = token;
+        }
+
         try {
-          if (workerUrl && !workerUrl.includes('example.hu')) {
+          if (willRelay) {
             const res = await fetch(workerUrl + '/api/contact/send', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },

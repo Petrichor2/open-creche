@@ -44,6 +44,10 @@
    - **Fix 2 — GDPR Art. 13 notice:** new `src/components/layout/PrivacyNotice.astro` dialog ("Adatkezelési információk"), linked from the footer and under the form submit button; localized `privacy.*` + `contactForm.privacyNote` strings in all three dictionaries.
    - Full analysis and the deploying-institution checklist (extend the notice with real controller data, Cloudflare/Resend DPAs, Web Accessibility Directive for municipal institutions, photo consents) documented in `docs/SECURITY_AND_PRIVACY.md` §6.
 
+5. **Mandatory Human Verification for Every Email (2026-11-21):**
+   - **Worker (`worker/src/index.ts`):** `POST /api/contact/send` now rejects any request without a server-verified Turnstile token with `403` *before* calling Resend — previously the token was optional, so the endpoint could be spammed directly (e.g. via curl). `wrangler deploy --dry-run` build verified; **the change is committed but NOT yet live on the Worker** — it needs a manual deploy: `cd worker && CLOUDFLARE_API_TOKEN=... bunx wrangler deploy` (wrangler on this machine is not authenticated; the token from the previous session is not stored here). After deploying, verify with: `curl -X POST https://open-creche-worker.fekete-dani1994.workers.dev/api/contact/send -H 'Content-Type: application/json' -d '{}'` → expect `403 Missing or invalid Turnstile verification`.
+   - **Client (`PrivacyVaultRuntime.astro`):** the contact form now *refuses to send* until the Turnstile challenge returns a token — if the visitor submits before the widget resolves (or the script is blocked), the form waits (bounded 15 s, "Küldés folyamatban..." feedback) and shows the localized `contactForm.verifyError` message on failure; the widget resets after every send so each email needs a fresh human check.
+
 ---
 
 ## 2. Environment & Quirks to Know
