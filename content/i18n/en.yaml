@@ -1,4 +1,5 @@
 nav:
+  toggle: "Open or close menu"
   about: "About Us"
   groups: "Our Groups"
   schedule: "Daily Routine"

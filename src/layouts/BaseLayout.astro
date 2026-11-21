@@ -67,7 +67,7 @@ const showDemoNotice = siteConfig.site?.demoContent ?? (siteConfig.security?.dem
           </span>
         </a>
 
-        <nav class="main-nav" aria-label="Primary Navigation">
+        <nav class="main-nav" id="site-nav" aria-label="Primary Navigation">
           {
             navItems.map((item) => (
               <a href={item.href} class="nav-link">
@@ -90,6 +90,25 @@ const showDemoNotice = siteConfig.site?.demoContent ?? (siteConfig.security?.dem
             ))
           }
         </div>
+
+        <button
+          type="button"
+          id="nav-toggle"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label={ui.nav?.toggle || 'Menu'}
+        >
+          <svg class="icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+          <svg class="icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -121,5 +140,36 @@ const showDemoNotice = siteConfig.site?.demoContent ?? (siteConfig.security?.dem
         accept={ui.demoNotice?.accept}
       />
     )}
+
+    <script is:inline>
+      (function () {
+        var header = document.querySelector('.site-header');
+        var toggle = document.getElementById('nav-toggle');
+        if (!header || !toggle) return;
+
+        function setNav(open) {
+          header.classList.toggle('nav-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        toggle.addEventListener('click', function () {
+          setNav(!header.classList.contains('nav-open'));
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && header.classList.contains('nav-open')) {
+            setNav(false);
+            toggle.focus();
+          }
+        });
+
+        // Anchor links close the menu so the target section stays visible.
+        header.querySelectorAll('.main-nav a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            setNav(false);
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

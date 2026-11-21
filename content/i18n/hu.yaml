@@ -1,4 +1,5 @@
 nav:
+  toggle: "Menü megnyitása vagy bezárása"
   about: "Bemutatkozás"
   groups: "Csoportjaink"
   schedule: "Napirend"
