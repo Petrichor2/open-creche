@@ -45,6 +45,39 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
     // prefixed with the base at fetch time to work on project pages subpath deployments.
     const basePath = (configEl.dataset.base || '/').replace(/\/+$/, '');
 
+    /**
+     * Lazy-load the Cloudflare Turnstile script ON DEMAND, only after the visitor
+     * explicitly requests a protected action (unlock button click, contact form use).
+     * ePrivacy / Hungarian 2011 CXII. tv. 13/A §: no third-party script (which may
+     * use device storage for bot detection) is fetched on plain page load.
+     */
+    let turnstileLoading = null;
+
+    function loadTurnstile() {
+      if (window.turnstile) return Promise.resolve();
+      if (turnstileLoading) return turnstileLoading;
+      turnstileLoading = new Promise(function (resolve, reject) {
+        var script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        script.onload = function () {
+          if (window.turnstile) {
+            resolve();
+          } else {
+            turnstileLoading = null;
+            reject(new Error('Turnstile loaded but the API is unavailable.'));
+          }
+        };
+        script.onerror = function () {
+          turnstileLoading = null;
+          reject(new Error('Failed to load the Turnstile script.'));
+        };
+        document.head.appendChild(script);
+      });
+      return turnstileLoading;
+    }
+
     function b64ToBytes(b64) {
       const bin = atob(b64);
       const bytes = new Uint8Array(bin.length);
@@ -221,7 +254,22 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
         btn.setAttribute('disabled', 'disabled');
         if (statusEl) statusEl.removeAttribute('hidden');
 
-        // If Cloudflare Turnstile script is loaded, render interactive/managed challenge
+        // Turnstile is fetched only now — after the explicit user request.
+        try {
+          await loadTurnstile();
+        } catch (err) {
+          if (isDemo) {
+            // Offline / blocked third-party script fallback in local demo mode
+            const keyB64 = await exchangeTurnstileTokenForKey('demo-local-token');
+            await unlockAllSections(keyB64);
+            return;
+          }
+          console.error(err);
+          if (statusEl) statusEl.textContent = configEl.dataset.errorMsg || 'Verification failed';
+          btn.removeAttribute('disabled');
+          return;
+        }
+
         if (window.turnstile && slot) {
           slot.innerHTML = '';
           window.turnstile.render(slot, {
@@ -237,7 +285,6 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
             },
           });
         } else if (isDemo) {
-          // Offline / blocked third-party script fallback in local demo mode
           const keyB64 = await exchangeTurnstileTokenForKey('demo-local-token');
           await unlockAllSections(keyB64);
         }
@@ -253,6 +300,39 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
     // Contact form submission handler
     const contactForm = document.getElementById('oc-contact-form');
     if (contactForm) {
+      // Turnstile widget for the form, rendered on first interaction (typing) —
+      // never on page load. The token lets the Worker verify a human sender;
+      // if the script cannot load, the message is still accepted without a token.
+      let formWidgetId = null;
+      let formToken = '';
+
+      const ensureFormTurnstile = async function () {
+        if (formWidgetId !== null) return;
+        const slot = contactForm.querySelector('[data-form-turnstile]');
+        if (!slot) return;
+        try {
+          await loadTurnstile();
+        } catch (err) {
+          return; /* graceful degradation: Worker accepts messages without a token */
+        }
+        if (window.turnstile) {
+          formWidgetId = window.turnstile.render(slot, {
+            sitekey: siteKey,
+            callback: function (token) {
+              formToken = token;
+            },
+            'expired-callback': function () {
+              formToken = '';
+            },
+            'error-callback': function () {
+              formToken = '';
+            },
+          });
+        }
+      };
+
+      contactForm.addEventListener('focusin', ensureFormTurnstile, { once: true });
+
       contactForm.addEventListener('submit', async (ev) => {
         ev.preventDefault();
         const submitBtn = contactForm.querySelector('button[type="submit"]');
@@ -262,6 +342,7 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
         const formData = new FormData(contactForm);
         const payload = Object.fromEntries(formData.entries());
         payload.locale = locale;
+        payload.turnstileToken = formToken;
 
         try {
           if (workerUrl && !workerUrl.includes('example.hu')) {
@@ -286,6 +367,11 @@ const { locale, turnstileSiteKey, workerBaseUrl, demoMode = true, uiVault } = As
           }
         } finally {
           if (submitBtn) submitBtn.removeAttribute('disabled');
+          // Reset the challenge so the next submission gets a fresh token.
+          if (formWidgetId !== null && window.turnstile) {
+            window.turnstile.reset(formWidgetId);
+            formToken = '';
+          }
         }
       });
     }

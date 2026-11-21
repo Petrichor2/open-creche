@@ -1,0 +1,185 @@
+---
+/**
+ * PrivacyNotice.astro
+ *
+ * GDPR Article 13 information notice for site visitors, shown in a warm,
+ * accessible dialog when they open the "Data protection information" link in
+ * the footer or next to the contact form. The site itself sets no cookies and
+ * no tracking/analytics storage — this dialog documents every piece of browser
+ * storage it DOES use (all written only after an explicit visitor action),
+ * the contact form data flow, the external processors involved
+ * (Cloudflare, Resend), and the GDPR data subject rights.
+ *
+ * The controller identity is taken from `config/site.yaml` (site title + city).
+ * Institutions deploying this template MUST review and extend this text with
+ * their exact legal name, contact e-mail, and retention periods
+ * (see docs/SECURITY_AND_PRIVACY.md — "EU (GDPR + ePrivacy) Compliance Posture").
+ */
+interface Props {
+  ui: Record<string, any>;
+  siteTitle: string;
+  city: string;
+}
+
+const { ui, siteTitle, city } = Astro.props;
+const p = ui.privacy || {};
+const storageItems: string[] = Array.isArray(p.storageItems) ? p.storageItems : [];
+---
+
+<div class="privacy-overlay" id="privacy-overlay" hidden>
+  <div
+    class="privacy-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="privacy-title"
+  >
+    <h2 class="privacy-title" id="privacy-title">{p.title || 'Data protection information'}</h2>
+
+    <p class="privacy-line">
+      <strong>{p.controllerIntro || 'Data controller:'}</strong>
+      {siteTitle}, {city}
+    </p>
+
+    <h3 class="privacy-subtitle">{p.storageTitle || 'What does your browser store?'}</h3>
+    <ul class="privacy-list">
+      {
+        storageItems.map((item) => (
+          <li>{item}</li>
+        ))
+      }
+    </ul>
+    <p class="privacy-line">{p.noTracking}</p>
+
+    <h3 class="privacy-subtitle">{p.formDataTitle || 'Contact form'}</h3>
+    <p class="privacy-line">{p.formDataBody}</p>
+
+    <h3 class="privacy-subtitle">{p.rightsTitle || 'Your rights (GDPR)'}</h3>
+    <p class="privacy-line">{p.rightsBody}</p>
+
+    <button type="button" class="privacy-close-btn" id="privacy-close">{p.close || 'Close'}</button>
+  </div>
+</div>
+
+<style>
+  .privacy-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  .privacy-overlay[hidden] {
+    display: none;
+  }
+
+  .privacy-card {
+    max-width: 34rem;
+    max-height: min(80vh, 40rem);
+    overflow-y: auto;
+    background: var(--bg-elevated, #ffffff);
+    border: 2px solid var(--color-border-strong, #cebfa8);
+    border-radius: var(--radius-pebble-1, 28px 34px 24px 32px / 24px 30px 28px 34px);
+    box-shadow: var(--shadow-card);
+    padding: 2rem 1.75rem 1.75rem;
+  }
+
+  .privacy-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text, #2c2523);
+    margin-bottom: 0.75rem;
+  }
+
+  .privacy-subtitle {
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    color: var(--color-primary-dark, #b8522e);
+    margin: 1.15rem 0 0.35rem;
+  }
+
+  .privacy-line {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--color-text-muted, #685b56);
+  }
+
+  .privacy-list {
+    margin: 0.35rem 0 0.55rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .privacy-list li {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--color-text-muted, #685b56);
+  }
+
+  .privacy-close-btn {
+    display: block;
+    margin: 1.4rem auto 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.65rem 1.6rem;
+    background: var(--color-primary, #d96b43);
+    color: var(--color-on-primary, #ffffff);
+    border: 2px solid var(--color-primary-dark, #b8522e);
+    border-radius: var(--radius-pill, 999px);
+    box-shadow: 0 4px 0 var(--color-primary-dark, #b8522e);
+    cursor: pointer;
+  }
+
+  .privacy-close-btn:hover {
+    background: var(--color-primary-dark, #b8522e);
+  }
+
+  .privacy-close-btn:focus-visible {
+    outline: 3px solid var(--color-accent, #e6b84c);
+    outline-offset: 2px;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var overlay = document.getElementById('privacy-overlay');
+    if (!overlay) return;
+    var closeBtn = document.getElementById('privacy-close');
+    var lastFocused = null;
+
+    function open(from) {
+      lastFocused = from || document.activeElement;
+      overlay.removeAttribute('hidden');
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function close() {
+      overlay.setAttribute('hidden', 'hidden');
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    // Any element with [data-privacy-open] (footer link, contact form note) opens the dialog.
+    document.addEventListener('click', function (event) {
+      var trigger = event.target.closest ? event.target.closest('[data-privacy-open]') : null;
+      if (trigger) {
+        event.preventDefault();
+        open(trigger);
+      }
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', close);
+
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) close();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !overlay.hasAttribute('hidden')) close();
+    });
+  })();
+</script>

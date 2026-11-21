@@ -127,3 +127,72 @@ Before encrypting any image into `public/vault-media/*.enc`:
 1. **EXIF Metadata Stripping:** All EXIF/IPTC/GPS tags are completely stripped.
 2. **Resizing & WebP Conversion:** Images are automatically resized (e.g., max `1600px` width for gallery, `600px` for staff portraits) and compressed to WebP before AES-256-GCM encryption.
 3. This ensures encrypted `.enc` blobs are small (typically 50–150 KB), fast to download from GitHub Pages, and free of hidden GPS leaks.
+
+---
+
+## 6. EU (GDPR + ePrivacy) Compliance Posture
+
+This project targets a primarily Hungarian / EU audience, so the client-side
+surface is designed against the **ePrivacy Directive (2002/58/EC)** — transposed
+in Hungary as *2011. évi CXII. törvény, 13/A. §* — and the **GDPR
+(2016/679)**, transposed as *2011. évi CXII. törvény* / *Az információs
+önrendelkezési jogról szóló 2011. évi CXII. törvény* (Act CXII of 2011 on
+Informational Self-Determination).
+
+### 6.1 Browser storage inventory (all first-party)
+
+| Storage key | Type | Written when | Lifetime | ePrivacy classification |
+|---|---|---|---|---|
+| `oc-theme` | `localStorage` | only on an explicit theme-toggle click | persistent, user-removable | Functional (user-requested) — no consent needed |
+| `oc_vault_aes_key_b64` | `sessionStorage` | only after the visitor passes Turnstile and unlocks protected content | tab session | Strictly necessary for the explicitly requested service |
+| `oc_demo_notice_dismissed` | `sessionStorage` | only after the visitor clicks OK on the demo notice | tab session | Functional (user-requested) |
+
+**The site itself sets zero cookies**, uses no analytics, no advertising
+identifiers, and loads no external fonts. Nothing is written to the visitor's
+device on page load — every write follows an explicit visitor action, so the
+*ePrivacy* consent requirement for non-essential storage is not triggered and
+**no cookie banner is needed** (which also keeps the site banner-free for
+children's guardians — a deliberate UX decision).
+
+### 6.2 Third-party requests (all user-initiated, all lazy)
+
+- **Cloudflare Turnstile** (`challenges.cloudflare.com`) is loaded **on
+  demand only**: when the visitor clicks an unlock button in a protected
+  section, or starts filling in the contact form. There is no third-party
+  request on plain page load.
+- **Cloudflare Worker** (the institution's own deployment) — called only for
+  the explicitly requested vault unlock and contact form submission.
+- **Resend** — email delivery processor, only involved in the contact form
+  flow (server-side, never contacted by the browser).
+
+### 6.3 GDPR information duty (Article 13)
+
+`src/components/layout/PrivacyNotice.astro` renders a localized
+**"Data protection information"** dialog (linked from the footer and next to
+the contact form submit button) covering: controller identity, browser
+storage inventory, contact form data flow with processors (Cloudflare,
+Resend), and GDPR data subject rights. Strings live under `privacy.*` in
+`content/i18n/{hu,en,de}.yaml`.
+
+### 6.4 What a deploying institution MUST still do
+
+1. **Extend the privacy notice** (`content/i18n/{lang}.yaml`, `privacy.*`)
+   with the institution's exact legal name, contact e-mail address, and
+   message retention period.
+2. **Sign DPAs** (Art. 28 processor agreements) with **Cloudflare** and
+   **Resend** — both publish standard GDPR terms; the free tiers are covered.
+3. If the institution is **state or municipally maintained**, the EU **Web
+   Accessibility Directive (2016/2104)** / *2005. évi XC. törvény* applies —
+   the built-in appearance themes (light / dark / WCAG-AAA contrast),
+   skip-link, and `:focus-visible` support are designed to help meet the
+   WCAG 2.1 AA obligation, but a formal audit is the institution's task.
+4. Photographs of children require the **guardians' written consent** under
+   GDPR Art. 6/9 (keep the consent records offline — never in this repo).
+
+### 6.5 AI translation pipeline
+
+`scripts/auto-translate.mjs` only ever sends **public `content/` files**
+(pages, groups, news, UI strings) to the translation provider. Staff
+profiles, phone numbers, and children's photos are never in `content/` — they
+exist only as AES-256-GCM ciphertext in `public/vault/` — so **no personal
+data is transmitted to any AI provider**.

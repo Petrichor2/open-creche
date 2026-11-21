@@ -358,6 +358,8 @@ const iconMap: Record<string, string> = {
                   <textarea id="cf-message" name="message" rows="4" required />
                 </div>
 
+                <div class="turnstile-slot" data-form-turnstile></div>
+
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
                   📨 {ui.contactForm?.submit}
                 </button>
@@ -366,6 +368,12 @@ const iconMap: Record<string, string> = {
                   hidden
                   style="margin-top: 0.85rem; font-weight: 700; text-align: center;"
                 />
+                <p class="form-privacy-note">
+                  {ui.contactForm?.privacyNote}
+                  <button type="button" class="link-button" data-privacy-open>
+                    {ui.privacy?.linkLabel}
+                  </button>
+                </p>
               </form>
             </div>
           )

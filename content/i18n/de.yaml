@@ -75,6 +75,22 @@ contactForm:
   sending: "Wird gesendet..."
   success: "Vielen Dank! Ihre Nachricht wurde sicher an unsere Einrichtung übermittelt."
   error: "Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut."
+  privacyNote: "Die von Ihnen angegebenen Daten werden ausschließlich zur Beantwortung Ihrer Anfrage verwendet — Details:"
+
+privacy:
+  linkLabel: "Datenschutzinformationen"
+  title: "Datenschutzinformationen"
+  controllerIntro: "Datenschutzverantwortlicher:"
+  storageTitle: "Was speichert Ihr Browser?"
+  storageItems:
+    - "Darstellungseinstellung (helles / dunkles / kontrastreiches Design) — nur wenn Sie den Design-Umschalter verwenden. Über die Website-Daten Ihres Browsers entfernbar."
+    - "Der Schlüssel der Missbrauchs-Verifikation — erst nachdem Sie geschützte Inhalte freischalten; beim Schließen des Tabs wird er gelöscht."
+    - "Das Wegklicken des Demo-Hinweises — erst nach dem Drücken von OK; beim Schließen des Tabs wird er gelöscht."
+  noTracking: "Diese Website verwendet keine Tracking-Cookies, Werbe-IDs oder Analyse-Lösungen und setzt keine sonstigen Cookies."
+  formDataTitle: "Kontaktformular"
+  formDataBody: "Name, E-Mail-Adresse, Telefonnummer und Nachricht werden ausschließlich zur Beantwortung Ihrer Anfrage verwendet. Die Daten erreichen uns über den Cloudflare Worker, die Zustellung erfolgt über Resend. Ein Drittanbieter (Bot-Schutz: Cloudflare Turnstile) wird erst einbezogen, wenn Sie das Formular nutzen."
+  rightsTitle: "Ihre Rechte (DSGVO)"
+  rightsBody: "Nach der DSGVO können Sie Auskunft über Ihre gespeicherten Daten sowie deren Berichtigung oder Löschung verlangen. Unsere Kontaktdaten finden Sie im Abschnitt Kontakt (nach der menschlichen Verifikation sichtbar)."
 
 footer:
   rights: "Alle Rechte vorbehalten."

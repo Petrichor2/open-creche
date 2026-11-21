@@ -75,6 +75,22 @@ contactForm:
   sending: "Sending..."
   success: "Thank you! Your message has been securely delivered to our institution."
   error: "Could not send message. Please try again."
+  privacyNote: "The information you provide is used solely to answer your inquiry — details:"
+
+privacy:
+  linkLabel: "Data protection information"
+  title: "Data protection information"
+  controllerIntro: "Data controller:"
+  storageTitle: "What does your browser store?"
+  storageItems:
+    - "Appearance preference (light / dark / high-contrast theme) — stored only if you use the theme toggle. You can remove it in your browser's site data settings."
+    - "The anti-abuse (human verification) key — stored only after you click to unlock protected content; deleted when the tab is closed."
+    - "Demo notice dismissal — stored only after you press OK; deleted when the tab is closed."
+  noTracking: "This website uses no tracking cookies, advertising identifiers, or analytics solutions, and sets no other cookies."
+  formDataTitle: "Contact form"
+  formDataBody: "The name, email address, phone number, and message you enter are used solely to answer your inquiry. The data reaches us through the Cloudflare Worker, and delivery is handled by Resend. A third party (bot protection: Cloudflare Turnstile) is only involved after you start using the form."
+  rightsTitle: "Your rights (GDPR)"
+  rightsBody: "Under the GDPR you may request information about, correction, or deletion of your stored data. You can find our contact details in the Contact section (shown after human verification)."
 
 footer:
   rights: "All rights reserved."

@@ -75,6 +75,22 @@ contactForm:
   sending: "Küldés folyamatban..."
   success: "Köszönjük! Üzenetét biztonságosan továbbítottuk intézményünk vezetőjének."
   error: "Hiba történt az üzenet küldésekor. Kérjük, próbálja újra."
+  privacyNote: "A megadott adatokat kizárólag a megkeresés megválaszolására használjuk — részletek:"
+
+privacy:
+  linkLabel: "Adatkezelési információk"
+  title: "Adatkezelési információk"
+  controllerIntro: "Az adatkezelő:"
+  storageTitle: "Mit tárol a böngészője?"
+  storageItems:
+    - "Megjelenítési beállítás (világos / sötét / kontrasztos téma) — csak akkor, ha Ön a váltógombbal témát vált. Eltávolítható a böngésző adatkezelésével."
+    - "Visszaélés-védelmi (humán) ellenőrzés kulcsa — csak Ön kattintott a védett tartalom felnyitására; lap bezárásakor törlődik."
+    - "A bemutató-figyelmeztetés elvetése — csak az OK gomb megnyomása után; lap bezárásakor törlődik."
+  noTracking: "Ez az oldal nem használ követő sütiket, hirdetési azonosítókat és analitikai megoldásokat, és nem helyez el másként sütiket."
+  formDataTitle: "Kapcsolatfelvételi űrlap"
+  formDataBody: "Az űrlapon megadott nevét, e-mail címét, telefonszámát és üzenetét kizárólag a megkeresés megválaszolására használjuk. Az adat a Cloudflare Worker közvetítésével érkezik hozzánk, a kézbesítést a Resend szolgálja ki. Harmadik fél bevonása (bot-védelem: Cloudflare Turnstile) csak az űrlap használatának megkezdése után történik."
+  rightsTitle: "Az Ön jogai (GDPR)"
+  rightsBody: "A GDPR alapján kérheti az Önre vonatkozó tárolt adatok tájékoztatását, helyesbítését vagy törlését. Elérhetőségeinket a Kapcsolat szekcióban találja (humán ellenőrzés után jelenik meg)."
 
 footer:
   rights: "Minden jog fenntartva."

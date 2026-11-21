@@ -1,6 +1,7 @@
 ---
 import '../styles/base.css';
 import DemoNotice from '../components/layout/DemoNotice.astro';
+import PrivacyNotice from '../components/layout/PrivacyNotice.astro';
 import type { SiteConfig } from '../utils/content';
 
 interface Props {
@@ -53,7 +54,6 @@ const themeLabels = {
     <title>{siteTitle} — {siteTagline}</title>
     <meta name="description" content={siteTagline} />
     <link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script is:inline>
       // Theme bootstrap — must run before first paint to avoid a flash of the wrong palette.
       // Priority: saved visitor choice > OS contrast preference > OS color scheme > light.
@@ -191,6 +191,11 @@ const themeLabels = {
         <div>
           <strong style="font-size: 1.08rem;">{siteTitle}</strong>
           <p style="margin-top: 0.35rem;">{ui.footer?.privacyNote}</p>
+          <p style="margin-top: 0.45rem;">
+            <button type="button" class="footer-link-btn" data-privacy-open>
+              {ui.privacy?.linkLabel || 'Data protection information'}
+            </button>
+          </p>
         </div>
         <div style="text-align: right;">
           <p>
@@ -210,6 +215,8 @@ const themeLabels = {
         accept={ui.demoNotice?.accept}
       />
     )}
+
+    <PrivacyNotice ui={ui} siteTitle={siteTitle} city={siteConfig.site.location.city} />
 
     <script is:inline>
       // Appearance toggle — cycles light -> dark -> contrast, persists the choice,

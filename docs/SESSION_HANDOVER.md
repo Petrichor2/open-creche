@@ -38,6 +38,12 @@
    - **Custom colors scoped:** `theme.colors` from `config/site.yaml` are now emitted as `html[data-theme='light']` overrides only (replacing the old empty `<style define:vars>` block), so user palettes can never break the dark/contrast themes.
    - The handcrafted hero SVG illustration intentionally keeps its light cream canvas in all themes (reads as a framed painting on dark surfaces).
 
+4. **EU (GDPR + ePrivacy) Compliance Pass (2026-11-21):**
+   - **Audit result:** the site sets **zero cookies**, no analytics, no external fonts; all browser storage (`oc-theme`, `oc_vault_aes_key_b64`, `oc_demo_notice_dismissed`) is functional/strictly-necessary and written only after explicit visitor actions → no consent banner needed (deliberate UX choice).
+   - **Fix 1 — lazy Turnstile:** the `challenges.cloudflare.com` script is no longer eagerly loaded on every page; `PrivacyVaultRuntime.astro` injects it on demand (unlock click / contact form `focusin`). The contact form now renders its own Turnstile widget and sends `turnstileToken` (Worker-side verification was already implemented). Demo fallbacks preserved.
+   - **Fix 2 — GDPR Art. 13 notice:** new `src/components/layout/PrivacyNotice.astro` dialog ("Adatkezelési információk"), linked from the footer and under the form submit button; localized `privacy.*` + `contactForm.privacyNote` strings in all three dictionaries.
+   - Full analysis and the deploying-institution checklist (extend the notice with real controller data, Cloudflare/Resend DPAs, Web Accessibility Directive for municipal institutions, photo consents) documented in `docs/SECURITY_AND_PRIVACY.md` §6.
+
 ---
 
 ## 2. Environment & Quirks to Know
