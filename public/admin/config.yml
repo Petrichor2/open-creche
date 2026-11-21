@@ -8,7 +8,7 @@ backend:
   auth_endpoint: api/oauth/auth
 
 media_folder: "public/assets"
-public_folder: "/open-creche/assets" # Must match the deployment base path (see config/site.yaml site.url)
+public_folder: "/assets" # Domain-root deployment (custom domain attached to GitHub Pages)
 
 i18n:
   structure: multiple_folders

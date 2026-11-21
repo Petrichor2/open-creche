@@ -4,7 +4,7 @@ site:
   #   - "https://<user>.github.io/<repo>" -> site is served under "/<repo>/" (GitHub Pages project site)
   #   - "https://www.my-creche.hu"         -> site is served at the domain root ("/")
   # Update this URL when you attach a custom domain and all links adjust automatically.
-  url: "https://petrichor2.github.io/open-creche"
+  url: "https://ovi.danielfekete.com"
   # Demo content: shows the dismissible "This is a demo website" notice.
   # Independent of security.demoMode — keep it true while the institution data
   # (names, address, photos) is still illustrative sample data, even when the
@@ -98,12 +98,12 @@ features:
   contactForm: true
 
 security:
-  # Cloudflare Turnstile Test Site Key (Always passes in demo/dev mode; replace in production)
-  turnstileSiteKey: "1x00000000000000000000AA"
-  # Cloudflare Worker base URL (set to empty or demo mode for local preview)
-  workerBaseUrl: "https://api.napsugar-ovi.example.hu"
-  # Demo mode allows unlocking the sample encrypted vault locally without deploying the Worker first
-  demoMode: true
+  # Cloudflare Turnstile Site Key (public, safe to commit)
+  turnstileSiteKey: "0x4AAAAAAGLrs-L21MhVMeu3"
+  # Cloudflare Worker base URL (Turnstile verification, vault key release, contact form relay)
+  workerBaseUrl: "https://open-creche-worker.fekete-dani1994.workers.dev"
+  # Production mode: the AES key is only released by the Worker after a valid Turnstile check.
+  demoMode: false
   protect:
     contactDetails: true
     staffProfiles: true
