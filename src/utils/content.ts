@@ -7,6 +7,8 @@ export interface SiteConfig {
   site: {
     url: string;
     type: 'creche' | 'kindergarten' | 'combined';
+    /** Marks the site content as illustrative demo data; shows the dismissible demo notice. */
+    demoContent?: boolean;
     title: Record<string, string>;
     tagline: Record<string, string>;
     heroSubtitle: Record<string, string>;
