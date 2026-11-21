@@ -3,7 +3,7 @@
 > **Last Updated:** 2026-11-20
 > **Current Branch:** `main`
 > **Build Status:** ✅ Passing (`4 page(s) built in ~1.75s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
-> **CI Status:** ✅ Passing — the workflow runs entirely on **Bun** (`oven-sh/setup-bun@v2`, `bun install`, `bun run i18n:translate` / `vault:demo` / `build`). **Subpath-aware links:** `astro.config.mjs` derives `base` from `site.url` (currently `https://petrichor2.github.io/open-creche` -> `/open-creche/`); when a custom domain is attached, update `site.url` (and `public/admin/config.yml` `public_folder`) and links revert to the domain root. To enable live auto-translation in CI, add the `GEMINI_API_KEY` repository secret; without it, translation is skipped gracefully and the site still builds and deploys.
+> **CI Status:** ✅ Passing — **live at https://ovi.danielfekete.com** (custom domain on GitHub Pages). The Privacy Vault runs on the production chain: real Turnstile widget + `open-creche-worker.fekete-dani1994.workers.dev` (secrets `VAULT_MASTER_KEY`/`TURNSTILE_SECRET_KEY` in Cloudflare), `security.demoMode: false`, `site.demoContent: true` (sample data, demo notice visible). Worker deploys: `cd worker && CLOUDFLARE_API_TOKEN=... bunx wrangler deploy`. Remaining manual step: **Enforce HTTPS** checkbox in GitHub Pages settings.
 
 ---
 
