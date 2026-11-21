@@ -76,6 +76,9 @@ i18n:
 theme:
   # Options: "sunshine" | "meadow" | "terracotta" | "forest"
   palette: "sunshine"
+  # Custom colors apply to the LIGHT appearance only. Visitors can always switch
+  # to a warm dark theme or a WCAG-AAA high-contrast (black) theme from the
+  # header appearance toggle; those curated palettes are not affected here.
   colors:
     background: "#FAF6F0"
     surface: "#F3ECE1"

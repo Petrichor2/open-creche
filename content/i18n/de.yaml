@@ -8,6 +8,14 @@ nav:
   gallery: "Galerie"
   contact: "Kontakt"
 
+a11y:
+  skipLink: "Zum Hauptinhalt springen"
+
+theme:
+  toLight: "Zum hellen Design wechseln"
+  toDark: "Zum dunklen Design wechseln"
+  toContrast: "Design mit hohem Kontrast verwenden"
+
 hero:
   primaryCta: "Unsere Gruppen entdecken"
   secondaryCta: "Kontakt aufnehmen"

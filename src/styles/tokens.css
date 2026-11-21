@@ -1,8 +1,17 @@
 /*
  * OpenCreche Craft Design Tokens (Vanilla CSS)
  * Warm, organic, non-SaaS visual language tailored for nurseries and kindergartens.
+ *
+ * Three accessibility-first appearance themes are available on <html data-theme="...">:
+ *   - "light"    (default): warm paper palette, can be overridden by config/site.yaml theme.colors
+ *   - "dark":              warm near-black, low-glare night palette (still terracotta/sage, never cold SaaS gray)
+ *   - "contrast":          pure black & white + amber/yellow, WCAG AAA-friendly high contrast
+ * The active theme is chosen by the inline bootstrap script in BaseLayout.astro:
+ * saved visitor choice (localStorage "oc-theme") > OS "prefers-contrast: more" > OS "prefers-color-scheme: dark" > light.
  */
 :root {
+  color-scheme: light;
+
   /* Warm paper & earth tones (default "sunshine" palette, overridden by site.yaml if set) */
   --bg-canvas: #FAF6F0;
   --bg-surface: #F3ECE1;
@@ -20,6 +29,28 @@
   --color-text-muted: #685B56;
   --color-border: #E2D7C5;
   --color-border-strong: #CEBFA8;
+
+  /* Text/icon color that stays readable on top of --color-primary (buttons, pills).
+     Flips to a dark ink in the dark theme where the brand hue is lifted for contrast. */
+  --color-on-primary: #FFFFFF;
+  /* One step deeper than --color-primary-dark (button hover shadows) */
+  --color-primary-deep: #8F3D1E;
+
+  /* Theme-aware component tints (previously hardcoded rgba/hex values in base.css) */
+  --header-bg: rgba(250, 246, 240, 0.92);
+  --dot-color-1: rgba(217, 107, 67, 0.045);
+  --dot-color-2: rgba(91, 130, 102, 0.045);
+  --shadow-hard-accent: 2px 3px 0 rgba(230, 184, 76, 0.35);
+  --pill-active-shadow: 0 2px 5px rgba(44, 37, 35, 0.08);
+  --tag-sun-text: #7D580E;
+  --tag-sun-border: #EBD089;
+  --badge-sage-border: #BBD3C2;
+
+  /* Footer shell (dark in every theme, tuned per palette) */
+  --footer-bg: #2C2523;
+  --footer-text: #EFE7DA;
+  --footer-muted: #C7B9A8;
+  --footer-heading: #FFFFFF;
 
   /* Typography — friendly, warm, highly legible without external Google Fonts tracking */
   --font-display: 'Nunito', 'Quicksand', 'Trebuchet MS', 'Hiragino Maru Gothic ProN', system-ui, -apple-system, sans-serif;
@@ -41,4 +72,90 @@
   /* Layout spacing */
   --container-max: 1160px;
   --section-pad-y: clamp(3.5rem, 7vw, 6rem);
+}
+
+/*
+ * Dark theme — warm ember & cocoa palette.
+ * Brand hues are lifted (lighter terracotta/sage) and text flips to warm cream so
+ * every text token keeps at least WCAG AA (most reach AAA) on the dark surfaces.
+ */
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg-canvas: #211C18;
+  --bg-surface: #2B241E;
+  --bg-elevated: #352D26;
+  --bg-tint-sage: #2A332C;
+  --bg-tint-sun: #3B3220;
+  --bg-tint-clay: #3A2B23;
+
+  --color-primary: #E07A4F;
+  --color-primary-dark: #F09A77;
+  --color-secondary: #7FA98C;
+  --color-secondary-dark: #9DC3AB;
+  --color-accent: #E6B84C;
+  --color-text: #F3EDE4;
+  --color-text-muted: #C4B6A8;
+  --color-border: #4A3F35;
+  --color-border-strong: #6B5B4C;
+
+  --color-on-primary: #241D19;
+  --color-primary-deep: #8F3D1E;
+
+  --header-bg: rgba(33, 28, 24, 0.92);
+  --dot-color-1: rgba(224, 122, 79, 0.06);
+  --dot-color-2: rgba(127, 169, 140, 0.05);
+  --shadow-hard-accent: 2px 3px 0 rgba(230, 184, 76, 0.25);
+  --pill-active-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+  --tag-sun-text: #E8C777;
+  --tag-sun-border: #7A6533;
+  --badge-sage-border: #4A5F50;
+
+  --footer-bg: #161210;
+  --footer-text: #F3EDE4;
+  --footer-muted: #C4B6A8;
+  --footer-heading: #FFFFFF;
+}
+
+/*
+ * High-contrast theme — pure black canvas, white text, amber/yellow brand hue.
+ * Designed for visitors with low vision or strong light sensitivity: every
+ * text/background pair aims for WCAG AAA (>= 7:1), borders stay >= 3:1.
+ */
+html[data-theme='contrast'] {
+  color-scheme: dark;
+
+  --bg-canvas: #000000;
+  --bg-surface: #000000;
+  --bg-elevated: #111111;
+  --bg-tint-sage: #0E221A;
+  --bg-tint-sun: #241F0A;
+  --bg-tint-clay: #241410;
+
+  --color-primary: #FFD100;
+  --color-primary-dark: #FFD100;
+  --color-secondary: #56D364;
+  --color-secondary-dark: #7EE68A;
+  --color-accent: #FF9E1B;
+  --color-text: #FFFFFF;
+  --color-text-muted: #F0F0F0;
+  --color-border: #767676;
+  --color-border-strong: #FFFFFF;
+
+  --color-on-primary: #000000;
+  --color-primary-deep: #8A6D00;
+
+  --header-bg: rgba(0, 0, 0, 0.95);
+  --dot-color-1: rgba(255, 255, 255, 0.035);
+  --dot-color-2: rgba(255, 255, 255, 0.035);
+  --shadow-hard-accent: 2px 3px 0 rgba(255, 158, 27, 0.5);
+  --pill-active-shadow: 0 2px 5px rgba(255, 255, 255, 0.25);
+  --tag-sun-text: #FFD100;
+  --tag-sun-border: #FFD100;
+  --badge-sage-border: #56D364;
+
+  --footer-bg: #000000;
+  --footer-text: #FFFFFF;
+  --footer-muted: #F0F0F0;
+  --footer-heading: #FFFFFF;
 }

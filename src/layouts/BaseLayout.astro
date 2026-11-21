@@ -19,10 +19,34 @@ const colors = siteConfig.theme?.colors || {};
 const rawBase = import.meta.env.BASE_URL;
 const baseUrl = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 const showDemoNotice = siteConfig.site?.demoContent ?? (siteConfig.security?.demoMode === true);
+
+// Custom brand colors from site.yaml apply to the LIGHT appearance only, so a
+// curated warm dark palette and the WCAG-AAA high-contrast palette can never be
+// broken by user-provided light-theme hues.
+const customLightVars = Object.entries({
+  'bg-canvas': colors.background,
+  'bg-surface': colors.surface,
+  'bg-elevated': colors.surfaceElevated,
+  'color-primary': colors.primary,
+  'color-primary-dark': colors.primaryDark,
+  'color-secondary': colors.secondary,
+  'color-accent': colors.accent,
+  'color-text': colors.text,
+  'color-text-muted': colors.textMuted,
+})
+  .filter(([, value]) => Boolean(value))
+  .map(([token, value]) => `--${token}: ${value};`)
+  .join('');
+
+const themeLabels = {
+  light: ui.theme?.toLight || 'Switch to light theme',
+  dark: ui.theme?.toDark || 'Switch to dark theme',
+  contrast: ui.theme?.toContrast || 'Switch to high-contrast theme',
+};
 ---
 
 <!doctype html>
-<html lang={locale}>
+<html lang={locale} data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,21 +54,35 @@ const showDemoNotice = siteConfig.site?.demoContent ?? (siteConfig.security?.dem
     <meta name="description" content={siteTagline} />
     <link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <style
-      define:vars={{
-        'bg-canvas': colors.background || '#FAF6F0',
-        'bg-surface': colors.surface || '#F3ECE1',
-        'bg-elevated': colors.surfaceElevated || '#FFFFFF',
-        'color-primary': colors.primary || '#D96B43',
-        'color-primary-dark': colors.primaryDark || '#B8522E',
-        'color-secondary': colors.secondary || '#5B8266',
-        'color-accent': colors.accent || '#E6B84C',
-        'color-text': colors.text || '#2C2523',
-        'color-text-muted': colors.textMuted || '#685B56',
-      }}
-    ></style>
+    <script is:inline>
+      // Theme bootstrap — must run before first paint to avoid a flash of the wrong palette.
+      // Priority: saved visitor choice > OS contrast preference > OS color scheme > light.
+      (function () {
+        var saved = null;
+        try {
+          saved = localStorage.getItem('oc-theme');
+        } catch (err) {
+          /* Storage unavailable (strict privacy mode) — fall through to OS preferences. */
+        }
+        var theme;
+        if (saved === 'light' || saved === 'dark' || saved === 'contrast') {
+          theme = saved;
+        } else if (window.matchMedia('(prefers-contrast: more)').matches) {
+          theme = 'contrast';
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          theme = 'dark';
+        } else {
+          theme = 'light';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    {customLightVars && (
+      <style is:inline set:html={`html[data-theme='light'] { ${customLightVars} }`} />
+    )}
   </head>
   <body>
+    <a class="skip-link" href="#main-content">{ui.a11y?.skipLink || 'Skip to main content'}</a>
     <header class="site-header">
       <div class="container header-inner">
         <a href={`${baseUrl}${locale}/`} class="brand-link">
@@ -91,35 +129,67 @@ const showDemoNotice = siteConfig.site?.demoContent ?? (siteConfig.security?.dem
           }
         </div>
 
-        <button
-          type="button"
-          id="nav-toggle"
-          class="nav-toggle"
-          aria-expanded="false"
-          aria-controls="site-nav"
-          aria-label={ui.nav?.toggle || 'Menu'}
-        >
-          <svg class="icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
-            <line x1="4" y1="7" x2="20" y2="7" />
-            <line x1="4" y1="12" x2="20" y2="12" />
-            <line x1="4" y1="17" x2="20" y2="17" />
-          </svg>
-          <svg class="icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
-            <line x1="6" y1="6" x2="18" y2="18" />
-            <line x1="18" y1="6" x2="6" y2="18" />
-          </svg>
-        </button>
+        <div class="header-actions">
+          <button
+            type="button"
+            id="theme-toggle"
+            class="theme-toggle"
+            data-next="dark"
+            data-label-light={themeLabels.light}
+            data-label-dark={themeLabels.dark}
+            data-label-contrast={themeLabels.contrast}
+            aria-label={themeLabels.dark}
+          >
+            <svg class="icon-sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+            <svg class="icon-moon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+            </svg>
+            <svg class="icon-contrast" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            id="nav-toggle"
+            class="nav-toggle"
+            aria-expanded="false"
+            aria-controls="site-nav"
+            aria-label={ui.nav?.toggle || 'Menu'}
+          >
+            <svg class="icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+              <line x1="4" y1="7" x2="20" y2="7" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="17" x2="20" y2="17" />
+            </svg>
+            <svg class="icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+            </svg>
+          </button>
+        </div>
       </div>
     </header>
 
-    <main>
+    <main id="main-content" tabindex="-1">
       <slot />
     </main>
 
     <footer class="site-footer">
       <div class="container footer-inner">
         <div>
-          <strong style="font-size: 1.08rem; color: #FFFFFF;">{siteTitle}</strong>
+          <strong style="font-size: 1.08rem;">{siteTitle}</strong>
           <p style="margin-top: 0.35rem;">{ui.footer?.privacyNote}</p>
         </div>
         <div style="text-align: right;">
@@ -140,6 +210,44 @@ const showDemoNotice = siteConfig.site?.demoContent ?? (siteConfig.security?.dem
         accept={ui.demoNotice?.accept}
       />
     )}
+
+    <script is:inline>
+      // Appearance toggle — cycles light -> dark -> contrast, persists the choice,
+      // and mirrors the NEXT theme's icon/label onto the button.
+      (function () {
+        var order = ['light', 'dark', 'contrast'];
+        var root = document.documentElement;
+        var button = document.getElementById('theme-toggle');
+
+        function nextOf(theme) {
+          return order[(order.indexOf(theme) + 1) % order.length];
+        }
+
+        function reflect(theme) {
+          if (!button) return;
+          var next = nextOf(theme);
+          var label = button.getAttribute('data-label-' + next) || 'Switch theme';
+          button.setAttribute('data-next', next);
+          button.setAttribute('aria-label', label);
+          button.setAttribute('title', label);
+        }
+
+        reflect(root.getAttribute('data-theme') || 'light');
+
+        if (button) {
+          button.addEventListener('click', function () {
+            var next = nextOf(root.getAttribute('data-theme') || 'light');
+            root.setAttribute('data-theme', next);
+            reflect(next);
+            try {
+              localStorage.setItem('oc-theme', next);
+            } catch (err) {
+              /* Storage unavailable — the choice simply won't persist. */
+            }
+          });
+        }
+      })();
+    </script>
 
     <script is:inline>
       (function () {

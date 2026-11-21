@@ -8,6 +8,14 @@ nav:
   gallery: "Galéria"
   contact: "Kapcsolat"
 
+a11y:
+  skipLink: "Ugrás a fő tartalomra"
+
+theme:
+  toLight: "Váltás világos témára"
+  toDark: "Váltás sötét témára"
+  toContrast: "Váltás magas kontrasztú témára"
+
 hero:
   primaryCta: "Ismerje meg csoportjainkat"
   secondaryCta: "Kapcsolatfelvétel"

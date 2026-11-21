@@ -1,8 +1,8 @@
 # Session Handover (`docs/SESSION_HANDOVER.md`)
 
-> **Last Updated:** 2026-11-20
+> **Last Updated:** 2026-11-21
 > **Current Branch:** `main`
-> **Build Status:** ✅ Passing (`4 page(s) built in ~1.75s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
+> **Build Status:** ✅ Passing (`4 page(s) built in ~1.7s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
 > **CI Status:** ✅ Passing — **live at https://ovi.danielfekete.com** (custom domain on GitHub Pages). The Privacy Vault runs on the production chain: real Turnstile widget + `open-creche-worker.fekete-dani1994.workers.dev` (secrets `VAULT_MASTER_KEY`/`TURNSTILE_SECRET_KEY` in Cloudflare), `security.demoMode: false`, `site.demoContent: true` (sample data, demo notice visible). Worker deploys: `cd worker && CLOUDFLARE_API_TOKEN=... bunx wrangler deploy`. Remaining manual step: **Enforce HTTPS** checkbox in GitHub Pages settings.
 
 ---
@@ -29,6 +29,14 @@
       - While `site.demoContent: true` (or, as fallback, `security.demoMode: true`) in `config/site.yaml`, every locale page renders a dismissible "This is a demo website" dialog (once per browser session, `sessionStorage`) with localized `demoNotice.*` strings from `content/i18n/{hu,en,de}.yaml`.
       - The sample address is now unmistakably fictitious: `0000 Példaváros, Példa utca 42.` with null-island coordinates. Replace it (and set `demoMode: false`) when deploying for a real institution.
       - Vault demo phone numbers (`+36 30 456 7890`) and `.example.hu` e-mail addresses were already clearly non-real.
+
+3. **Accessible Appearance & Theme System (2026-11-21):**
+   - **Three appearance modes** on `<html data-theme="...">`: `light` (warm paper default), `dark` (warm ember/cocoa near-black — terracotta & sage lifted for AA/AAA contrast, never cold SaaS gray), and `contrast` (pure black + white + amber `#FFD100`, AAA text pairs). All defined as pure CSS token overrides in `src/styles/tokens.css`.
+   - **Header appearance toggle** (sun/moon/contrast icons) cycles `light → dark → contrast`, persists in `localStorage ("oc-theme")`, exposes action-based localized `aria-label`s (`theme.toLight/toDark/toContrast` in all three i18n dictionaries), and sits in a new `.header-actions` group that also holds the mobile hamburger (mobile grid placement moved from `.nav-toggle` to `.header-actions`).
+   - **Bootstrap script in `<head>`** runs before first paint: saved choice > `prefers-contrast: more` > `prefers-color-scheme: dark` > light (no flash of the wrong palette).
+   - **Accessibility groundwork:** skip-to-content link (`.skip-link` + `a11y.skipLink` strings), global `:focus-visible` ring, `prefers-reduced-motion` kill-switch, `<main id="main-content" tabindex="-1">`, and every previously hardcoded color in `base.css`/`DemoNotice.astro` tokenized (`--color-on-primary`, `--header-bg`, `--footer-*`, `--tag-sun-*`, `--badge-sage-border`, `--dot-color-*`, `--shadow-hard-accent`, `--pill-active-shadow`).
+   - **Custom colors scoped:** `theme.colors` from `config/site.yaml` are now emitted as `html[data-theme='light']` overrides only (replacing the old empty `<style define:vars>` block), so user palettes can never break the dark/contrast themes.
+   - The handcrafted hero SVG illustration intentionally keeps its light cream canvas in all themes (reads as a framed painting on dark surfaces).
 
 ---
 

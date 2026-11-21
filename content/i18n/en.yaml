@@ -8,6 +8,14 @@ nav:
   gallery: "Photo Gallery"
   contact: "Contact"
 
+a11y:
+  skipLink: "Skip to main content"
+
+theme:
+  toLight: "Switch to light theme"
+  toDark: "Switch to dark theme"
+  toContrast: "Switch to high-contrast theme"
+
 hero:
   primaryCta: "Explore Our Groups"
   secondaryCta: "Get in Touch"
