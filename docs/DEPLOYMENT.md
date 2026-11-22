@@ -143,7 +143,7 @@ The Cloudflare Worker validates Turnstile tokens, releases the AES decryption ke
    - **`www` subdomain:** Add a `CNAME` record pointing to `<your-username>.github.io`.
    - Set Cloudflare SSL/TLS mode to **Full (Strict)**.
 5. **Update `site.url` in `config/site.yaml`** to your custom domain (e.g., `https://www.napsugar-ovi.hu`). The deployment base path is derived from this URL, so as soon as it points to a domain root, all internal links are generated without the GitHub Pages `/<repo>/` prefix. Also update `public/admin/config.yml`'s `public_folder` accordingly and commit the change.
-5. Once DNS propagates, check **"Enforce HTTPS"** in GitHub Pages settings.
+5. Once DNS propagates, check **"Enforce HTTPS"** in GitHub Pages settings (or via the API: `gh api --method PUT repos/<owner>/<repo>/pages --input - <<< '{"https_enforced":true}'` — requires the certificate state to be `approved`).
 
 ---
 

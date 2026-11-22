@@ -3,7 +3,7 @@
 > **Last Updated:** 2026-11-22
 > **Current Branch:** `main`
 > **Build Status:** ✅ Passing (`4 page(s) built in ~1.8s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
-> **CI Status:** ✅ Passing — **live at https://ovi.danielfekete.com** (custom domain on GitHub Pages). The Privacy Vault runs on the production chain: real Turnstile widget + `open-creche-worker.fekete-dani1994.workers.dev` (secrets `VAULT_MASTER_KEY`/`TURNSTILE_SECRET_KEY` in Cloudflare), `security.demoMode: false`, `site.demoContent: true` (sample data, demo notice visible). Worker deploys: `cd worker && CLOUDFLARE_API_TOKEN=... bunx wrangler deploy`. Remaining manual step: **Enforce HTTPS** checkbox in GitHub Pages settings.
+> **CI Status:** ✅ Passing — **live at https://ovi.danielfekete.com** (custom domain on GitHub Pages, **HTTPS enforced** — `https_enforced: true` set via the GitHub REST API on 2026-11-22; plain HTTP 301-redirects to HTTPS). The Privacy Vault runs on the production chain: real Turnstile widget + `open-creche-worker.fekete-dani1994.workers.dev` (secrets `VAULT_MASTER_KEY`/`TURNSTILE_SECRET_KEY` in Cloudflare), `security.demoMode: false`, `site.demoContent: true` (sample data, demo notice visible). Worker deploys: `cd worker && CLOUDFLARE_API_TOKEN=... bunx wrangler deploy`.
 
 ---
 
@@ -20,6 +20,7 @@
    - Data fixed: all 9 artifacts (3 manifests + 6 media blobs) re-encrypted under the real `.env` master key; verified via CLI `decrypt` → `.vault-raw/*.yaml` now exists locally (gitignored) as the editing source.
    - ⚠️ **After pushing these commits, verify live unlock once in a browser.** If the Worker secret were somehow *not* the `.env` key, the one-command fix is `cd worker && echo "VAULT_MASTER_KEY=<.env value>" | bunx wrangler secret put VAULT_MASTER_KEY` (secret values are write-only in Cloudflare, so this could not be verified remotely).
 3. **Docs:** new `docs/VAULT_MANAGER.md` guide; `docs/CMS_GUIDE.md` Workflow A rewritten to match the real tool (plus stale `content/vault/` path fixed); README feature bullet, docs list entry, Quick Start step; `AGENTS.md` key files map; TASKS.md Phase 4 item checked.
+4. **Enforce HTTPS enabled (2026-11-22):** `gh api --method PUT repos/Petrichor2/open-creche/pages -f https_enforced=true` (the REST `PUT /repos/{owner}/{repo}/pages` body parameter `https_enforced` does what the web checkbox does; certificate was already `approved`). Verified: `https_enforced: true` in the API, `http://` returns `301` → `https://ovi.danielfekete.com/`, HTTPS serves 200. The last remaining manual step from the 2026-11-21 deployment is closed.
 
 ---
 

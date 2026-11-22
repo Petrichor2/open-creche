@@ -40,7 +40,11 @@ optional additions documented in `docs/DEPLOYMENT.md`.
 1. GitHub repository → **Settings → Pages → Custom domain** → enter
    `ovi.danielfekete.com` → **Save**.
 2. Wait for the DNS check to pass and the certificate to be issued (a few
-   minutes), then tick **Enforce HTTPS**.
+   minutes), then tick **Enforce HTTPS**. The same toggle is available via the
+   REST API once the certificate shows `approved`:
+   ```bash
+   gh api --method PUT repos/<owner>/<repo>/pages --input - <<< '{"https_enforced":true}'
+   ```
 3. Optional: once HTTPS works, you may re-enable the Cloudflare proxy (orange
    cloud) and set SSL/TLS to **Full (Strict)**.
 
