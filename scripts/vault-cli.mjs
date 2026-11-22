@@ -34,8 +34,12 @@ function loadMasterKey(useDemo = false) {
       return Buffer.from(match[1], 'base64');
     }
   }
-  console.warn('⚠️  No VAULT_MASTER_KEY found in .env; falling back to DEMO_MASTER_KEY_B64.');
-  return Buffer.from(DEMO_MASTER_KEY_B64, 'base64');
+  // NEVER silently fall back to the public DEMO key here: "encrypt"/"decrypt"
+  // are production operations, and a demo-key fallback would quietly commit
+  // vault artifacts that the production Worker key cannot decrypt.
+  throw new Error(
+    'No VAULT_MASTER_KEY found. Add it to .env (see scripts/generate-keys.mjs) or export it, then retry.'
+  );
 }
 
 /**
@@ -306,14 +310,21 @@ function generateDemoVault() {
 
   console.log('🔒 Generated AES-256-GCM encrypted vault manifests in public/vault/*.enc.json');
   console.log('🔒 Generated AES-256-GCM encrypted binary photos in public/vault-media/**/*.enc');
+  console.log('ℹ️  These are DEMO artifacts under the PUBLIC demo key (preview unlocks it via security.demoMode: true).');
+  console.log('   Never deploy them with security.demoMode: false — run "encrypt" with real data for production.');
 }
 
 function encryptFromRawDir() {
   const rawDir = path.resolve('.vault-raw');
   if (!fs.existsSync(rawDir)) {
-    console.log('ℹ️  No .vault-raw/ directory found. Generating default encrypted demo vault instead...');
-    generateDemoVault();
-    return;
+    // Abort instead of silently generating demo-key artifacts: a fallback here
+    // previously produced vault files that only the PUBLIC demo key can
+    // decrypt — an invisible production breakage when committed as "encrypted".
+    console.error('❌ No .vault-raw/ directory found.');
+    console.error('   - For a local/out-of-the-box preview run:        bun run vault:demo');
+    console.error('   - For real data: create .vault-raw/{contact,staff,gallery}.yaml,');
+    console.error('     place raw photos in .vault-raw/media/, then run: bun run vault:encrypt');
+    process.exit(1);
   }
   const key = loadMasterKey(false);
   const outVaultDir = path.resolve('public/vault');
