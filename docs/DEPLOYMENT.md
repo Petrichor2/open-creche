@@ -86,7 +86,6 @@ The Cloudflare Worker validates Turnstile tokens, releases the AES decryption ke
 
    [vars]
    ALLOWED_ORIGIN = "https://napsugar-ovi.hu"
-   FROM_EMAIL = "weboldal@napsugar-ovi.hu"
    ```
 3. Authenticate Wrangler with your Cloudflare account and upload your secrets:
    ```bash
@@ -95,7 +94,9 @@ The Cloudflare Worker validates Turnstile tokens, releases the AES decryption ke
    npx wrangler secret put TURNSTILE_SECRET_KEY
    npx wrangler secret put RESEND_API_KEY
    npx wrangler secret put CONTACT_RECIPIENT_EMAIL
+   npx wrangler secret put FROM_EMAIL  # relay sender address, e.g. "weboldal@napsugar-ovi.hu"
    ```
+   *(The sender address is a secret too — same anti-scrape principle as the recipient: institutional e-mail addresses never live in plaintext in the public repository.)*
    *(Optional, if using GitHub login for the `/admin` CMS):*
    ```bash
    npx wrangler secret put GITHUB_OAUTH_CLIENT_ID

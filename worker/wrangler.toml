@@ -5,12 +5,13 @@ compatibility_date = "2026-01-01"
 [vars]
 # Site origin allowed to call this Worker's APIs (CORS). Keep in sync with site.url.
 ALLOWED_ORIGIN = "https://ovi.danielfekete.com"
-FROM_EMAIL = "***REMOVED***"
 
 # Secrets to be configured via `npx wrangler secret put <NAME>`:
 # - VAULT_MASTER_KEY
 # - TURNSTILE_SECRET_KEY
 # - RESEND_API_KEY
 # - CONTACT_RECIPIENT_EMAIL
+# - FROM_EMAIL (relay sender address — deployed as a secret so institutional
+#   e-mail addresses never live in plaintext in this public repository)
 # - GITHUB_OAUTH_CLIENT_ID
 # - GITHUB_OAUTH_CLIENT_SECRET
