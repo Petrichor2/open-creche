@@ -78,6 +78,7 @@ bun ./node_modules/astro/astro.js dev
 - `scripts/vault-cli.mjs` — AES-256-GCM encryption/decryption CLI for contact details, staff, and gallery blobs.
 - `scripts/auto-translate.mjs` — Gemini / Cloudflare AI automated translation script.
 - `src/components/vault/PrivacyVaultRuntime.astro` — Client-side WebCrypto AES-256-GCM decryptor and Turnstile controller.
+- `public/admin/vault.html` (+ `vault-manager.js`, `vault-crypto.js`, `vault-manager.css`) — Standalone browser Vault Manager: decrypt/edit/re-encrypt protected data with EXIF stripping and atomic GitHub commits.
 - `worker/src/index.ts` — Cloudflare Worker (Turnstile `siteverify`, vault key release, Resend email relay, GitHub OAuth for CMS).
 - `docs/TASKS.md` — Project backlog and milestone tracking.
 - `docs/SESSION_HANDOVER.md` — Session state and handover notes for the next agent.

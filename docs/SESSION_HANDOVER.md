@@ -1,9 +1,25 @@
 # Session Handover (`docs/SESSION_HANDOVER.md`)
 
-> **Last Updated:** 2026-11-21
+> **Last Updated:** 2026-11-22
 > **Current Branch:** `main`
-> **Build Status:** ✅ Passing (`4 page(s) built in ~1.7s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
+> **Build Status:** ✅ Passing (`4 page(s) built in ~1.8s` — `/index.html`, `/hu/index.html`, `/en/index.html`, `/de/index.html`)
 > **CI Status:** ✅ Passing — **live at https://ovi.danielfekete.com** (custom domain on GitHub Pages). The Privacy Vault runs on the production chain: real Turnstile widget + `open-creche-worker.fekete-dani1994.workers.dev` (secrets `VAULT_MASTER_KEY`/`TURNSTILE_SECRET_KEY` in Cloudflare), `security.demoMode: false`, `site.demoContent: true` (sample data, demo notice visible). Worker deploys: `cd worker && CLOUDFLARE_API_TOKEN=... bunx wrangler deploy`. Remaining manual step: **Enforce HTTPS** checkbox in GitHub Pages settings.
+
+---
+
+## 0. This Session (2026-11-22): Browser Vault Manager + critical demo-key fix
+
+1. **Browser Vault Manager (`/admin/vault.html`) shipped** — the Phase 4 headline feature:
+   - Files: `public/admin/vault.html` (shell), `vault-manager.js` (app), `vault-crypto.js` (pure WebCrypto core, importable for tests), `vault-manager.css` (standalone craft styling incl. `prefers-color-scheme: dark`).
+   - Workflow: paste master key → browser fetches & decrypts `public/vault/*.enc.json` → edit Contact/Staff/Gallery in tabbed forms (hu/en/de with HU→EN/DE copy buttons, auto-slugged ids) → drag-and-drop photos (canvas EXIF/GPS strip → WebP, 1600 px cap; SVG kept byte-exact) → review staged writes/deletes → **single atomic commit** via the GitHub **Git Data API** (blobs → tree → commit → ref update), or **download** the `.enc` files + `VAULT-README.txt` with target paths.
+   - Safety: key & PAT live in JS memory only (Lock & wipe button); **public demo key detected & warned**; orphaned media `.enc` blobs staged for deletion when entries are removed; repo/branch auto-filled from `public/admin/config.yml`; UI localized hu/en/de (`localStorage oc-vault-lang`).
+   - Verified: Node-crypto ↔ WebCrypto roundtrip parity test (JSON + binary, both directions, byte-identical) using the real `.env` key; `bun build` syntax/import check; full site build includes all four files in `dist/admin/`.
+2. **Live-site integrity bug found & fixed (root cause + data):**
+   - `bun scripts/vault-cli.mjs decrypt` proved the vault artifacts committed in `a5c97fd` ("re-encrypted under the real key") were actually encrypted with the **public DEMO key** — `encryptFromRawDir()` silently fell back to `generateDemoVault()` (which always uses the demo key) when `.vault-raw/` was missing. The Worker secret holds the real key, so live visitors passed Turnstile but browser decryption failed silently.
+   - CLI fixed: `loadMasterKey` no longer silently falls back to the demo key (throws with instructions); `encrypt` aborts with a clear message when `.vault-raw/` is missing; `demo` output now states it used the public demo key.
+   - Data fixed: all 9 artifacts (3 manifests + 6 media blobs) re-encrypted under the real `.env` master key; verified via CLI `decrypt` → `.vault-raw/*.yaml` now exists locally (gitignored) as the editing source.
+   - ⚠️ **After pushing these commits, verify live unlock once in a browser.** If the Worker secret were somehow *not* the `.env` key, the one-command fix is `cd worker && echo "VAULT_MASTER_KEY=<.env value>" | bunx wrangler secret put VAULT_MASTER_KEY` (secret values are write-only in Cloudflare, so this could not be verified remotely).
+3. **Docs:** new `docs/VAULT_MANAGER.md` guide; `docs/CMS_GUIDE.md` Workflow A rewritten to match the real tool (plus stale `content/vault/` path fixed); README feature bullet, docs list entry, Quick Start step; `AGENTS.md` key files map; TASKS.md Phase 4 item checked.
 
 ---
 
@@ -63,4 +79,5 @@ Refer to **Phase 3** in [`docs/TASKS.md`](TASKS.md):
 1. Implement **Theme Palette Presets** (`sunshine`, `meadow`, `terracotta`, `forest`) and the `<SectionDivider />` SVG component (`waves`, `hills`, `clouds`, `leaves`).
 2. Add a zero-dependency **Lightbox modal** for decrypted gallery images.
 3. Add a **Downloadable Documents** section (for *Házirend*, *Pedagógiai Program*, enrollment forms).
-4. Build the in-browser **Admin Vault Manager (`/admin/vault.html`)** so non-technical staff can encrypt and upload photos directly from their browser without running CLI commands.
+4. Smaller Phase 4 leftovers: EXIF stripping/WebP for the **CLI** (`vault-cli.mjs`) and the **Zod config validation** CI script.
+5. Verify the live Vault Manager once after this session's commits deploy: unlock `https://ovi.danielfekete.com/admin/vault.html` with the `.env` key — it should decrypt all three manifests (this doubles as the end-to-end proof that vault artifacts and Worker secret now share the same key).

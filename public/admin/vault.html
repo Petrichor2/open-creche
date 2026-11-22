@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>OpenCreche — Vault Manager (encrypted data editor)</title>
+    <link rel="stylesheet" href="./vault-manager.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- ================= Header ================= -->
+      <header class="vault-header">
+        <div class="brand">
+          <!-- Handcrafted inline SVG: pebble shield with a keyhole sun -->
+          <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true">
+            <path
+              d="M32 4 C46 8 54 10 58 12 C58 38 50 52 32 60 C14 52 6 38 6 12 C10 10 18 8 32 4 Z"
+              fill="#D96B43" />
+            <circle cx="32" cy="27" r="8" fill="#FAF6F0" />
+            <rect x="29" y="32" width="6" height="12" rx="2" fill="#FAF6F0" />
+            <circle cx="32" cy="27" r="3" fill="#2C2523" />
+          </svg>
+          <div>
+            <h1>OpenCreche Vault Manager</h1>
+            <p data-i18n="appSubtitle"></p>
+          </div>
+        </div>
+        <div class="header-spacer"></div>
+        <nav class="lang-switch" aria-label="Language / Nyelv / Sprache">
+          <button type="button" class="lang-pill" data-lang="hu">🇭🇺 HU</button>
+          <button type="button" class="lang-pill" data-lang="en">🇬🇧 EN</button>
+          <button type="button" class="lang-pill" data-lang="de">🇩🇪 DE</button>
+        </nav>
+      </header>
+
+      <p class="security-note" data-i18n="securityNote"></p>
+
+      <!-- ================= 1. Unlock ================= -->
+      <section class="panel" id="setup-panel" aria-labelledby="setup-title">
+        <h2 id="setup-title" data-i18n="step1Title"></h2>
+
+        <label class="field-label" for="master-key" data-i18n="masterKeyLabel"></label>
+        <div class="key-box">
+          <input
+            type="password"
+            id="master-key"
+            autocomplete="off"
+            spellcheck="false"
+            data-i18n-placeholder="masterKeyPlaceholder"
+          />
+          <button type="button" class="eye-btn" data-toggle-visibility="master-key" aria-label="show / hide">👁</button>
+        </div>
+        <p class="hint" data-i18n="masterKeyHint"></p>
+        <div class="btn-row">
+          <button type="button" class="btn-primary" id="load-btn" data-i18n="loadBtn"></button>
+          <button type="button" class="btn-ghost" id="empty-btn" data-i18n="startEmptyBtn"></button>
+          <button type="button" class="btn-ghost" id="generate-key-btn" data-i18n="generateKeyBtn"></button>
+          <button type="button" class="btn-ghost" id="lock-btn" data-i18n="lockBtn"></button>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite" hidden></p>
+
+        <div class="gh-row">
+          <div>
+            <label class="field-label" for="gh-pat" data-i18n="ghPatLabel"></label>
+            <div class="key-box">
+              <input
+                type="password"
+                id="gh-pat"
+                autocomplete="off"
+                spellcheck="false"
+                data-i18n-placeholder="ghPatPlaceholder"
+              />
+              <button type="button" class="eye-btn" data-toggle-visibility="gh-pat" aria-label="show / hide">👁</button>
+            </div>
+            <p class="hint" data-i18n="ghPatHint"></p>
+          </div>
+          <div>
+            <label class="field-label" for="repo" data-i18n="repoLabel"></label>
+            <input type="text" id="repo" placeholder="owner/repo" autocomplete="off" spellcheck="false" />
+            <label class="field-label" for="branch" style="margin-top: 0.6rem" data-i18n="branchLabel"></label>
+            <input type="text" id="branch" placeholder="main" autocomplete="off" spellcheck="false" />
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. Editor ================= -->
+      <section class="panel" id="editor-panel" aria-labelledby="editor-title" hidden>
+        <h2 id="editor-title" data-i18n="step2Title"></h2>
+        <div id="tabs" role="tablist"></div>
+        <div id="tab-contact" role="tabpanel"></div>
+        <div id="tab-staff" role="tabpanel" hidden></div>
+        <div id="tab-gallery" role="tabpanel" hidden></div>
+      </section>
+
+      <!-- ================= 3. Commit ================= -->
+      <section class="panel" id="commit-panel" aria-labelledby="commit-title" hidden>
+        <h2 id="commit-title" data-i18n="step3Title"></h2>
+        <div id="commit-warnings" hidden></div>
+        <table id="staged-table">
+          <thead>
+            <tr>
+              <th data-i18n="tableFile"></th>
+              <th data-i18n="tableAction"></th>
+              <th data-i18n="tableSize"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <label class="field-label" for="commit-msg" style="margin-top: 1.1rem" data-i18n="commitMsgLabel"></label>
+        <input type="text" id="commit-msg" style="width: 100%" />
+        <div class="btn-row" style="margin-top: 1rem">
+          <button type="button" class="btn-primary" id="commit-btn" data-i18n="commitBtn"></button>
+          <button type="button" class="btn-soft" id="download-btn" data-i18n="downloadBtn"></button>
+        </div>
+        <div id="gh-log" hidden></div>
+      </section>
+
+      <!-- ================= Footer ================= -->
+      <footer class="vault-footer">
+        <span>🔒 AES-256-GCM · WebCrypto · <a href="./">Sveltia CMS</a></span>
+        <a id="back-link" href="../">↩ <span data-i18n="backToSite"></span></a>
+      </footer>
+    </div>
+
+    <script type="module" src="./vault-manager.js"></script>
+  </body>
+</html>

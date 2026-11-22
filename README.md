@@ -20,6 +20,7 @@ It enables child-care institutions to launch a warm, human-crafted, custom-domai
 - **Config-Driven & Visual Admin UI:**
   - Everything is controlled through clean YAML and Markdown files.
   - Includes **Sveltia CMS** (a modern, lightweight, Decap CMS-compatible Git-based visual editor) with Cloudflare Worker GitHub OAuth support so non-technical nursery directors and teachers can edit content easily.
+  - Includes a **browser-based Vault Manager** (`/admin/vault.html`): edit phone numbers, staff profiles, and gallery photos with automatic EXIF/GPS stripping, in-browser AES-256-GCM encryption, and a one-click atomic Git commit — no command line needed.
 - **Tailored for Nurseries & Kindergartens:**
   - **Introduction & Pedagogy:** Mission, values, daily routine/schedule, meal plans.
   - **Groups / Rooms:** Age groups, room capacities, daily activities.
@@ -79,7 +80,9 @@ All project documentation is written in English and located in the [`docs/`](doc
    Step-by-step guide for setting up GitHub Pages, custom domain with Cloudflare DNS, Cloudflare Turnstile, Cloudflare Worker, and Resend email forwarding.
 5. **[Editor & CMS Guide](docs/CMS_GUIDE.md)**
    How non-technical staff can update news, schedules, and encrypted photos using the Git-based Admin UI or YAML/Markdown files.
-6. **[AI Agent Instructions (`AGENTS.md`)](AGENTS.md)**
+6. **[Browser Vault Manager Guide](docs/VAULT_MANAGER.md)**
+   Editing the encrypted Privacy Vault entirely in the browser: EXIF stripping, WebCrypto encryption, and atomic GitHub commits.
+7. **[AI Agent Instructions (`AGENTS.md`)](AGENTS.md)**
    Architectural rules, styling guidelines, and local build commands for AI coding agents.
 7. **[Task List & Roadmap (`docs/TASKS.md`)](docs/TASKS.md)** & **[Session Handover (`docs/SESSION_HANDOVER.md`)](docs/SESSION_HANDOVER.md)**
    Project backlog, completed phases, and session continuity notes.
@@ -91,7 +94,7 @@ All project documentation is written in English and located in the [`docs/`](doc
 1. **Fork or Use Template:** Create a new public GitHub repository from `open-creche`.
 2. **Configure Site:** Edit `config/site.yaml` to set your institution's name, active languages (`hu`, `en`, `de`), theme palette, and active sections.
 3. **Deploy Cloudflare Worker:** Deploy the included `worker/` script to your free Cloudflare account and set your `VAULT_MASTER_KEY`, `TURNSTILE_SECRET_KEY`, and `RESEND_API_KEY`.
-4. **Encrypt Sensitive Data:** Run `bun run vault:encrypt` (or upload via the Admin UI) to encrypt phone numbers, staff profiles, and gallery photos into `.enc` files before committing.
+4. **Encrypt Sensitive Data:** Run `bun run vault:encrypt` or use the **browser Vault Manager** at `/admin/vault.html` (drag-and-drop photos, automatic EXIF stripping, encrypted upload) to encrypt phone numbers, staff profiles, and gallery photos into `.enc` files.
 5. **Enable GitHub Pages:** Push to `main`—GitHub Actions automatically builds the Astro site and deploys it to GitHub Pages behind your custom Cloudflare domain.
 
 ---

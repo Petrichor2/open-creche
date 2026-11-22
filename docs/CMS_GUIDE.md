@@ -16,7 +16,7 @@ OpenCreche supports two ways of updating content:
    - **Introduction & Daily Schedule (`en`, `hu`, `de`)**
    - **Groups / Rooms (`en`, `hu`, `de`)**
    - **News & Event Calendar (`en`, `hu`, `de`)**
-   - **Privacy Vault Manager (Contacts, Staff, Encrypted Gallery)**
+   - **Privacy Vault** is edited in the separate **Vault Manager** at `/admin/vault.html` (encrypted data cannot be a plain CMS collection) — see [Vault Manager Guide](VAULT_MANAGER.md).
 
 ---
 
@@ -41,15 +41,19 @@ Because the GitHub repository is public, **plaintext phone numbers, staff photos
 
 OpenCreche provides two safe workflows for managing protected data:
 
-### Workflow A: Built-in Browser Vault Manager (Inside `/admin`)
-Inside `/admin/`, the **Privacy Vault** tab embeds a custom client-side encryption utility:
-1. You enter your institution's `VAULT_MASTER_KEY` (or unlock via your admin session).
+### Workflow A: Browser Vault Manager (`/admin/vault.html`)
+
+The **Vault Manager** is a standalone, client-side encryption utility (no install, no command line):
+
+1. Navigate to `https://<your-domain>/admin/vault.html` and enter your institution's `VAULT_MASTER_KEY`.
 2. The browser fetches and decrypts the current `contact.enc.json`, `staff.enc.json`, and `gallery.enc.json` in memory.
 3. You can edit phone numbers, add a new staff member, or drag-and-drop new event photos directly in the browser.
 4. Before uploading to GitHub:
-   - An in-browser `<canvas>` worker strips all EXIF/GPS metadata and resizes the image to WebP.
-   - `window.crypto.subtle.encrypt('AES-GCM', ...)` encrypts both the image binary (`.enc`) and the JSON manifest (`.enc.json`).
-   - Only the encrypted `.enc` files are committed to the GitHub repository via the GitHub API.
+   - An in-browser `<canvas>` pass strips all EXIF/GPS metadata and re-encodes the image as WebP.
+   - `window.crypto.subtle.encrypt('AES-GCM', ...)` encrypts both the image binary (`.enc`) and the JSON manifests (`.enc.json`).
+   - Only the encrypted `.enc` files are committed to the GitHub repository — via the GitHub API in a single atomic commit, or as plain downloads.
+
+Full walkthrough: **[docs/VAULT_MANAGER.md](VAULT_MANAGER.md)**.
 
 ### Workflow B: Local CLI Encryption (`bun run vault:encrypt`)
 For maintainers working locally on a computer:
@@ -59,5 +63,5 @@ For maintainers working locally on a computer:
    ```bash
    bun run vault:encrypt
    ```
-4. Commit the generated `content/vault/*.enc.json` and `public/vault-media/**/*.enc` files.
+4. Commit the generated `public/vault/*.enc.json` and `public/vault-media/**/*.enc` files.
    *(Note: `.vault-raw/` is in `.gitignore`, so raw photos are never committed.)*
